@@ -16,6 +16,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='username',
-            field=django.contrib.postgres.fields.citext.CITextField(error_messages={'unique': 'Пользователь с данным именем уже существует'}, max_length=150, validators=[django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='Имя пользователя'),
+            field=django.contrib.postgres.fields.citext.CITextField(error_messages={'unique': 'Пользователь с данным именем уже существует'}, max_length=150, validators=[
+                                                                    django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='Имя пользователя'),
         ),
     ]

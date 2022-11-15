@@ -34,7 +34,8 @@ def render(context: RenderContext, params):
     num_threads = ForumThread.objects.filter(category=category).count()
     num_posts = ForumPost.objects.filter(thread__category=category).count()
 
-    canonical_url = '/forum/c-%d/%s' % (category.id, articles.normalize_article_name(category.name))
+    canonical_url = '/forum/c-%d/%s' % (category.id,
+                                        articles.normalize_article_name(category.name))
 
     editor_config = {
         'categoryId': category.id,
@@ -103,7 +104,8 @@ def api_submit(context, params):
     if not permissions.check(context.user, 'create', ForumThread(category=category)):
         raise ModuleError('Недостаточно прав для создания темы')
 
-    thread = ForumThread(category=category, name=title, description=description, author=context.user)
+    thread = ForumThread(category=category, name=title,
+                         description=description, author=context.user)
     thread.save()
 
     first_post = ForumPost(thread=thread, author=context.user, name=title)
@@ -111,7 +113,8 @@ def api_submit(context, params):
     first_post.updated_at = datetime.now(timezone.utc)
     first_post.save()
 
-    first_post_content = ForumPostVersion(post=first_post, source=source, author=context.user)
+    first_post_content = ForumPostVersion(
+        post=first_post, source=source, author=context.user)
     first_post_content.save()
 
     return {'url': '/forum/t-%d/%s' % (thread.id, articles.normalize_article_name(title))}

@@ -82,22 +82,28 @@ class ArticleView(TemplateResponseMixin, ContextMixin, View):
                 status = 403
             else:
                 source = articles.get_latest_source(article)
-                source = apply_template(source, lambda param: self.get_page_path_params(path_params, param))
+                source = apply_template(
+                    source, lambda param: self.get_page_path_params(path_params, param))
 
                 if article.name != '_template':
-                    template = articles.get_article('%s:_template' % article.category)
+                    template = articles.get_article(
+                        '%s:_template' % article.category)
                     if template:
                         template_source = articles.get_latest_source(template)
-                        source = apply_template(template_source, {'content': source})
-                context = RenderContext(article, article, path_params, self.request.user)
-                content, excerpt, image = single_pass_render_with_excerpt(source, context)
+                        source = apply_template(
+                            template_source, {'content': source})
+                context = RenderContext(
+                    article, article, path_params, self.request.user)
+                content, excerpt, image = single_pass_render_with_excerpt(
+                    source, context)
                 redirect_to = context.redirect_to
                 title = context.title
                 status = context.status
         else:
             name, category = articles.get_name(fullname)
             options = {'page_id': fullname, 'pathParams': path_params}
-            context = {'options': json.dumps(options), 'allow_create': articles.is_full_name_allowed(fullname) and permissions.check(self.request.user, "create", Article(name=name, category=category))}
+            context = {'options': json.dumps(options), 'allow_create': articles.is_full_name_allowed(
+                fullname) and permissions.check(self.request.user, "create", Article(name=name, category=category))}
             content = render_to_string(self.template_404, context)
             redirect_to = None
             title = ''
@@ -128,7 +134,8 @@ class ArticleView(TemplateResponseMixin, ContextMixin, View):
         for param in path_params:
             encoded_params += '/%s' % param
             if path_params[param] is not None:
-                encoded_params += '/%s' % urllib.parse.quote(path_params[param], safe='')
+                encoded_params += '/%s' % urllib.parse.quote(
+                    path_params[param], safe='')
 
         normalized_article_name = articles.normalize_article_name(article_name)
         if normalized_article_name != article_name:
@@ -142,7 +149,8 @@ class ArticleView(TemplateResponseMixin, ContextMixin, View):
         nav_top = self._render_nav("nav:top", article, path_params)
         nav_side = self._render_nav("nav:side", article, path_params)
 
-        content, status, redirect_to, excerpt, image, title = self.render(article_name, article, path_params)
+        content, status, redirect_to, excerpt, image, title = self.render(
+            article_name, article, path_params)
 
         context = super(ArticleView, self).get_context_data(**kwargs)
 
@@ -151,11 +159,13 @@ class ArticleView(TemplateResponseMixin, ContextMixin, View):
         }
 
         site = get_current_site()
-        article_rating, article_votes, article_rating_mode = articles.get_rating(article)
+        article_rating, article_votes, article_rating_mode = articles.get_rating(
+            article)
 
         comment_thread_id, comment_count = articles.get_comment_info(article)
 
-        canonical_url = '//%s/%s%s' % (site.domain, article.full_name if article else article_name, encoded_params)
+        canonical_url = '//%s/%s%s' % (
+            site.domain, article.full_name if article else article_name, encoded_params)
 
         options_config = {
             'optionsEnabled': status == 200,
@@ -177,7 +187,8 @@ class ArticleView(TemplateResponseMixin, ContextMixin, View):
         for tag_name in articles.get_tags(article):
             if tag_name.startswith('_'):
                 continue
-            tags.append({'link': '/system:page-tags/tag/%s#pages' % urllib.parse.quote(tag_name, safe=''), 'name': tag_name})
+            tags.append({'link': '/system:page-tags/tag/%s#pages' % urllib.parse.quote(
+                tag_name, safe=''), 'name': tag_name})
 
         print(repr(tags))
 

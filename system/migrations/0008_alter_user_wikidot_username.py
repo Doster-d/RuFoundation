@@ -15,6 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='wikidot_username',
-            field=django.contrib.postgres.fields.citext.CITextField(max_length=150, null=True, unique=True, validators=[django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='Имя пользователя на Wikidot'),
+            field=django.contrib.postgres.fields.citext.CITextField(max_length=150, null=True, unique=True, validators=[
+                                                                    django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='Имя пользователя на Wikidot'),
         ),
     ]

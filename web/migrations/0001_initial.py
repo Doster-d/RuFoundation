@@ -17,15 +17,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Article',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('category', models.TextField(default='_default', verbose_name='Категория')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('category', models.TextField(
+                    default='_default', verbose_name='Категория')),
                 ('name', models.TextField(verbose_name='Имя')),
                 ('title', models.TextField(verbose_name='Заголовок')),
-                ('locked', models.BooleanField(default=False, verbose_name='Страница защищена')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Время создания')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Время изменения')),
-                ('author', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Автор')),
-                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.article', verbose_name='Родитель')),
+                ('locked', models.BooleanField(
+                    default=False, verbose_name='Страница защищена')),
+                ('created_at', models.DateTimeField(
+                    auto_now_add=True, verbose_name='Время создания')),
+                ('updated_at', models.DateTimeField(
+                    auto_now=True, verbose_name='Время изменения')),
+                ('author', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                 to=settings.AUTH_USER_MODEL, verbose_name='Автор')),
+                ('parent', models.ForeignKey(blank=True, null=True,
+                 on_delete=django.db.models.deletion.SET_NULL, to='web.article', verbose_name='Родитель')),
             ],
             options={
                 'verbose_name': 'Статья',
@@ -36,8 +43,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Settings',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.TextField(choices=[('disabled', 'Disabled'), ('updown', 'Updown'), ('stars', 'Stars')], default=None, null=True, verbose_name='Система рейтинга')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('type', models.TextField(choices=[('disabled', 'Disabled'), ('updown', 'Updown'), (
+                    'stars', 'Stars')], default=None, null=True, verbose_name='Система рейтинга')),
             ],
             options={
                 'verbose_name': 'Настройки',
@@ -47,14 +56,17 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Site',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('slug', models.TextField(verbose_name='Сокращение')),
                 ('title', models.TextField(verbose_name='Заголовок')),
                 ('headline', models.TextField(verbose_name='Подзаголовок')),
-                ('icon', models.ImageField(blank=True, null=True, upload_to='-/sites', verbose_name='Иконка')),
+                ('icon', models.ImageField(blank=True, null=True,
+                 upload_to='-/sites', verbose_name='Иконка')),
                 ('domain', models.TextField(verbose_name='Домен для статей')),
                 ('media_domain', models.TextField(verbose_name='Домен для файлов')),
-                ('settings', models.OneToOneField(on_delete=django.db.models.deletion.DO_NOTHING, to='web.settings')),
+                ('settings', models.OneToOneField(
+                    on_delete=django.db.models.deletion.DO_NOTHING, to='web.settings')),
             ],
             options={
                 'verbose_name': 'Сайт',
@@ -65,11 +77,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Vote',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('rate', models.IntegerField(verbose_name='Оценка')),
-                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='votes', to='web.article', verbose_name='Статья')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
-                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='votes', to='web.article', verbose_name='Статья')),
+                ('site', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
+                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL,
+                 to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
             ],
             options={
                 'verbose_name': 'Оценка',
@@ -79,9 +95,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Tag',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(unique=True, verbose_name='Название')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
+                ('site', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
             ],
             options={
                 'verbose_name': 'Тег',
@@ -91,17 +109,25 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='File',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(verbose_name='Название файла')),
-                ('media_name', models.TextField(verbose_name='Название файла в ФС-хранилище')),
+                ('media_name', models.TextField(
+                    verbose_name='Название файла в ФС-хранилище')),
                 ('mime_type', models.TextField(verbose_name='MIME-тип')),
-                ('size', models.PositiveBigIntegerField(verbose_name='Размер файла')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Время создания')),
+                ('size', models.PositiveBigIntegerField(
+                    verbose_name='Размер файла')),
+                ('created_at', models.DateTimeField(
+                    auto_now_add=True, verbose_name='Время создания')),
                 ('deleted_at', models.DateTimeField(blank=True, null=True)),
-                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.article', verbose_name='Статья')),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_files', to=settings.AUTH_USER_MODEL, verbose_name='Автор файла')),
-                ('deleted_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='deleted_files', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь, удаливший файл')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
+                ('article', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.article', verbose_name='Статья')),
+                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL,
+                 related_name='created_files', to=settings.AUTH_USER_MODEL, verbose_name='Автор файла')),
+                ('deleted_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                 related_name='deleted_files', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь, удаливший файл')),
+                ('site', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
             ],
             options={
                 'verbose_name': 'Файл',
@@ -111,10 +137,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Category',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(verbose_name='Имя')),
-                ('settings', models.OneToOneField(on_delete=django.db.models.deletion.DO_NOTHING, to='web.settings')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
+                ('settings', models.OneToOneField(
+                    on_delete=django.db.models.deletion.DO_NOTHING, to='web.settings')),
+                ('site', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
             ],
             options={
                 'verbose_name': 'Категория',
@@ -125,12 +154,17 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ArticleVersion',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('source', models.TextField(verbose_name='Исходник')),
-                ('rendered', models.TextField(blank=True, null=True, verbose_name='Рендер статьи')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Время создания')),
-                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.article', verbose_name='Статья')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
+                ('rendered', models.TextField(blank=True,
+                 null=True, verbose_name='Рендер статьи')),
+                ('created_at', models.DateTimeField(
+                    auto_now_add=True, verbose_name='Время создания')),
+                ('article', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.article', verbose_name='Статья')),
+                ('site', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
             ],
             options={
                 'verbose_name': 'Версия статьи',
@@ -140,15 +174,23 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ArticleLogEntry',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.TextField(choices=[('source', 'Source'), ('title', 'Title'), ('name', 'Name'), ('tags', 'Tags'), ('new', 'New'), ('parent', 'Parent'), ('file_added', 'Fileadded'), ('file_deleted', 'Filedeleted'), ('file_renamed', 'Filerenamed'), ('wikidot', 'Wikidot')], verbose_name='Тип')),
-                ('meta', models.JSONField(blank=True, default=dict, verbose_name='Мета')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Время создания')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('type', models.TextField(choices=[('source', 'Source'), ('title', 'Title'), ('name', 'Name'), ('tags', 'Tags'), ('new', 'New'), ('parent', 'Parent'), (
+                    'file_added', 'Fileadded'), ('file_deleted', 'Filedeleted'), ('file_renamed', 'Filerenamed'), ('wikidot', 'Wikidot')], verbose_name='Тип')),
+                ('meta', models.JSONField(blank=True,
+                 default=dict, verbose_name='Мета')),
+                ('created_at', models.DateTimeField(
+                    auto_now_add=True, verbose_name='Время создания')),
                 ('comment', models.TextField(blank=True, verbose_name='Комментарий')),
-                ('rev_number', models.PositiveIntegerField(verbose_name='Номер правки')),
-                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.article', verbose_name='Статья')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                ('rev_number', models.PositiveIntegerField(
+                    verbose_name='Номер правки')),
+                ('article', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.article', verbose_name='Статья')),
+                ('site', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
+                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                 to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
             ],
             options={
                 'verbose_name': 'Запись в журнале изменений',
@@ -158,63 +200,78 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='article',
             name='site',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт'),
         ),
         migrations.AddField(
             model_name='article',
             name='tags',
-            field=models.ManyToManyField(blank=True, related_name='articles', to='web.tag', verbose_name='Тэги'),
+            field=models.ManyToManyField(
+                blank=True, related_name='articles', to='web.tag', verbose_name='Тэги'),
         ),
         migrations.AddConstraint(
             model_name='vote',
-            constraint=models.UniqueConstraint(fields=('site', 'article', 'user'), name='web_vote_unique'),
+            constraint=models.UniqueConstraint(
+                fields=('site', 'article', 'user'), name='web_vote_unique'),
         ),
         migrations.AddIndex(
             model_name='tag',
-            index=models.Index(fields=['name'], name='web_tag_name_41cd6e_idx'),
+            index=models.Index(
+                fields=['name'], name='web_tag_name_41cd6e_idx'),
         ),
         migrations.AddConstraint(
             model_name='tag',
-            constraint=models.UniqueConstraint(fields=('site', 'name'), name='web_tag_unique'),
+            constraint=models.UniqueConstraint(
+                fields=('site', 'name'), name='web_tag_unique'),
         ),
         migrations.AddConstraint(
             model_name='site',
-            constraint=models.UniqueConstraint(fields=('domain',), name='web_site_domain_unique'),
+            constraint=models.UniqueConstraint(
+                fields=('domain',), name='web_site_domain_unique'),
         ),
         migrations.AddConstraint(
             model_name='site',
-            constraint=models.UniqueConstraint(fields=('slug',), name='web_site_slug_unique'),
+            constraint=models.UniqueConstraint(
+                fields=('slug',), name='web_site_slug_unique'),
         ),
         migrations.AddIndex(
             model_name='file',
-            index=models.Index(fields=['article', 'name'], name='web_file_article_c1ccbd_idx'),
+            index=models.Index(
+                fields=['article', 'name'], name='web_file_article_c1ccbd_idx'),
         ),
         migrations.AddConstraint(
             model_name='file',
-            constraint=models.UniqueConstraint(fields=('site', 'article', 'name', 'deleted_at'), name='web_file_unique'),
+            constraint=models.UniqueConstraint(
+                fields=('site', 'article', 'name', 'deleted_at'), name='web_file_unique'),
         ),
         migrations.AddIndex(
             model_name='category',
-            index=models.Index(fields=['name'], name='web_categor_name_e51bae_idx'),
+            index=models.Index(
+                fields=['name'], name='web_categor_name_e51bae_idx'),
         ),
         migrations.AddConstraint(
             model_name='category',
-            constraint=models.UniqueConstraint(fields=('site', 'name'), name='web_category_unique'),
+            constraint=models.UniqueConstraint(
+                fields=('site', 'name'), name='web_category_unique'),
         ),
         migrations.AddIndex(
             model_name='articleversion',
-            index=models.Index(fields=['article', 'created_at'], name='web_article_article_eb894c_idx'),
+            index=models.Index(
+                fields=['article', 'created_at'], name='web_article_article_eb894c_idx'),
         ),
         migrations.AddConstraint(
             model_name='articlelogentry',
-            constraint=models.UniqueConstraint(fields=('site', 'article', 'rev_number'), name='web_articlelogentry_unique'),
+            constraint=models.UniqueConstraint(
+                fields=('site', 'article', 'rev_number'), name='web_articlelogentry_unique'),
         ),
         migrations.AddIndex(
             model_name='article',
-            index=models.Index(fields=['category', 'name'], name='web_article_categor_006394_idx'),
+            index=models.Index(
+                fields=['category', 'name'], name='web_article_categor_006394_idx'),
         ),
         migrations.AddConstraint(
             model_name='article',
-            constraint=models.UniqueConstraint(fields=('site', 'category', 'name'), name='web_article_unique'),
+            constraint=models.UniqueConstraint(
+                fields=('site', 'category', 'name'), name='web_article_unique'),
         ),
     ]

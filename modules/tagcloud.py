@@ -24,7 +24,8 @@ def interpolate_font_size(min_size, max_size, value):
     min_sz, min_unit = parse_font_size(min_size)
     max_sz, max_unit = parse_font_size(max_size)
     if min_unit != max_unit:
-        raise ModuleError('Разные единицы измерения максимального и минимального размера: %s и %s' % (min_size, max_size))
+        raise ModuleError(
+            'Разные единицы измерения максимального и минимального размера: %s и %s' % (min_size, max_size))
     sz = min_sz + (max_sz - min_sz) * value
     return '%.4f%s' % (sz, min_unit)
 
@@ -45,7 +46,8 @@ def parse_color(color):
             except:
                 pass
     elif color.lstrip().startswith('rgb'):
-        match = re.fullmatch(r'rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)', color.strip())
+        match = re.fullmatch(
+            r'rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)', color.strip())
         if match:
             try:
                 r = int(match[1])
@@ -100,7 +102,8 @@ def render(context, params):
 
     target = params.get('target', 'system:page-tags')
 
-    q = Tag.objects.filter(~Q(name__startswith='_')).annotate(num_articles=Count('articles')).order_by('-num_articles')
+    q = Tag.objects.filter(~Q(name__startswith='_')).annotate(
+        num_articles=Count('articles')).order_by('-num_articles')
     if limit is not None:
         q = q[:limit]
 
@@ -120,7 +123,8 @@ def render(context, params):
     render_tags = []
 
     for k in tags_sorted_by_name:
-        value = float(tags[k] - min_num) / (max_num - min_num) if max_num - min_num else 0
+        value = float(tags[k] - min_num) / (max_num -
+                                            min_num) if max_num - min_num else 0
         render_tags.append({
             'name': k,
             'color': interpolate_color(min_color, max_color, value),

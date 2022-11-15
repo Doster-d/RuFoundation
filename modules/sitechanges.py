@@ -25,7 +25,8 @@ def get_post_info(context, posts, category_for_comments):
     post_info = []
 
     for post in posts:
-        thread_url = '/forum/t-%d/%s' % (post.thread.id, articles.normalize_article_name(post.thread.name if post.thread.category_id else post.thread.article.display_name))
+        thread_url = '/forum/t-%d/%s' % (post.thread.id, articles.normalize_article_name(
+            post.thread.name if post.thread.category_id else post.thread.article.display_name))
         render_post = {
             'id': post.id,
             'name': post.name.strip() or 'Перейти к сообщению',
@@ -66,7 +67,8 @@ def log_entry_type_name(entry: ArticleLogEntry.LogEntryType) -> (str, str):
         ArticleLogEntry.LogEntryType.FileAdded: ('F', 'файл добавлен'),
         ArticleLogEntry.LogEntryType.FileDeleted: ('F', 'файл удалён'),
         ArticleLogEntry.LogEntryType.FileRenamed: ('F', 'файл переименован'),
-        ArticleLogEntry.LogEntryType.Wikidot: ('W', 'правка, портированная с Wikidot')
+        ArticleLogEntry.LogEntryType.Wikidot: (
+            'W', 'правка, портированная с Wikidot')
     }
     return mapping.get(entry, ('?', '?'))
 
@@ -135,7 +137,8 @@ def render(context: RenderContext, params):
     q = ArticleLogEntry.objects.all()
 
     if filter_types:
-        q = q.filter(Q(type__in=filter_types) | reduce(operator.or_, (Q(meta__subtypes__contains=x) for x in filter_types)))
+        q = q.filter(Q(type__in=filter_types) | reduce(
+            operator.or_, (Q(meta__subtypes__contains=x) for x in filter_types)))
 
     if category != '*':
         q = q.filter(article__category=category)
@@ -170,7 +173,8 @@ def render(context: RenderContext, params):
             'article_url': '/%s' % entry.article.full_name
         })
 
-    categories = sorted(Article.objects.distinct('category').values_list('category', flat=True))
+    categories = sorted(Article.objects.distinct(
+        'category').values_list('category', flat=True))
 
     type_filter = []
     type_filter_empty = not filter_types
@@ -331,7 +335,8 @@ def render(context: RenderContext, params):
         """,
         entries=entries,
         categories=categories,
-        pagination=render_pagination(None, page, max_page) if max_page != 1 else '',
+        pagination=render_pagination(
+            None, page, max_page) if max_page != 1 else '',
         data_path_params=json.dumps(context.path_params),
         data_params=json.dumps(params),
         category_param=category,

@@ -16,11 +16,13 @@ def render(context, params):
 
     # find articles by tag
     try:
-        articles = Tag.objects.get(name__iexact=params['tag']).articles.order_by('title')
+        articles = Tag.objects.get(
+            name__iexact=params['tag']).articles.order_by('title')
     except Tag.DoesNotExist:
         return ''
 
-    articles = [{'full_name': x.full_name, 'title': x.title or x.full_name} for x in articles]
+    articles = [{'full_name': x.full_name, 'title': x.title or x.full_name}
+                for x in articles]
 
     return render_template_from_string(
         """

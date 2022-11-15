@@ -12,11 +12,13 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='article',
-            options={'verbose_name': 'Статья', 'verbose_name_plural': 'Статьи'},
+            options={'verbose_name': 'Статья',
+                     'verbose_name_plural': 'Статьи'},
         ),
         migrations.AlterModelOptions(
             name='category',
-            options={'verbose_name': 'Категория', 'verbose_name_plural': 'Категории'},
+            options={'verbose_name': 'Категория',
+                     'verbose_name_plural': 'Категории'},
         ),
         migrations.AlterModelOptions(
             name='site',
@@ -25,26 +27,31 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='users_can_create',
-            field=models.BooleanField(default=True, verbose_name='Пользователи могут создавать статьи'),
+            field=models.BooleanField(
+                default=True, verbose_name='Пользователи могут создавать статьи'),
         ),
         migrations.AddField(
             model_name='category',
             name='users_can_delete',
-            field=models.BooleanField(default=True, verbose_name='Пользователи могут удалять статьи'),
+            field=models.BooleanField(
+                default=True, verbose_name='Пользователи могут удалять статьи'),
         ),
         migrations.AddField(
             model_name='category',
             name='users_can_edit',
-            field=models.BooleanField(default=True, verbose_name='Пользователи могут редактировать статьи'),
+            field=models.BooleanField(
+                default=True, verbose_name='Пользователи могут редактировать статьи'),
         ),
         migrations.AddField(
             model_name='category',
             name='users_can_rate',
-            field=models.BooleanField(default=True, verbose_name='Пользователи могут голосовать за статьи'),
+            field=models.BooleanField(
+                default=True, verbose_name='Пользователи могут голосовать за статьи'),
         ),
         migrations.AddField(
             model_name='category',
             name='users_can_view',
-            field=models.BooleanField(default=True, verbose_name='Пользователи могут просматривать статьи'),
+            field=models.BooleanField(
+                default=True, verbose_name='Пользователи могут просматривать статьи'),
         ),
     ]

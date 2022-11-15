@@ -27,5 +27,6 @@ class PreviewView(APIView):
         title = data["title"] if "title" in data else ""
         source = data["source"]
 
-        context = RenderContext(article, article, path_params, self.request.user)
+        context = RenderContext(
+            article, article, path_params, self.request.user)
         return self.render_json(200, {"title": title, "content": single_pass_render(source, context)})

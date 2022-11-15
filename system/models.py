@@ -24,14 +24,18 @@ class User(AbstractUser):
         },
     )
 
-    wikidot_username = CITextField(unique=True, max_length=150, validators=[AbstractUser.username_validator], verbose_name="Имя пользователя на Wikidot", null=True, blank=False)
+    wikidot_username = CITextField(unique=True, max_length=150, validators=[
+                                   AbstractUser.username_validator], verbose_name="Имя пользователя на Wikidot", null=True, blank=False)
 
-    type = models.TextField(choices=UserType.choices, default=UserType.Normal, verbose_name="Тип")
+    type = models.TextField(choices=UserType.choices,
+                            default=UserType.Normal, verbose_name="Тип")
 
-    avatar = models.ImageField(null=True, blank=True, upload_to='-/users', verbose_name="Аватар")
+    avatar = models.ImageField(
+        null=True, blank=True, upload_to='-/users', verbose_name="Аватар")
     bio = models.TextField(blank=True, verbose_name="Описание")
 
-    api_key = models.CharField(unique=True, blank=True, null=True, max_length=67, verbose_name="Апи-ключ")
+    api_key = models.CharField(
+        unique=True, blank=True, null=True, max_length=67, verbose_name="Апи-ключ")
 
     def get_avatar(self, default=None):
         if self.avatar:

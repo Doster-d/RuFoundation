@@ -32,7 +32,7 @@ def get_name(full_name: str) -> Tuple[str, str]:
 
 
 def strip_accents(s):
-   return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
+    return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
 
 
 def normalize_article_name(full_name: str) -> str:
@@ -59,7 +59,8 @@ def get_article(full_name_or_article: _FullNameOrArticle) -> Optional[Article]:
     if type(full_name_or_article) == str:
         full_name_or_article = full_name_or_article.lower()
         category, name = get_name(full_name_or_article)
-        objects = Article.objects.filter(category__iexact=category, name__iexact=name)
+        objects = Article.objects.filter(
+            category__iexact=category, name__iexact=name)
         if objects:
             return objects[0]
         else:
@@ -141,7 +142,8 @@ def revert_article_version(full_name_or_article: _FullNameOrArticle, rev_number:
             break
 
         if entry.type == ArticleLogEntry.LogEntryType.Source:
-            new_props['source'] = get_previous_version(entry.meta['version_id']).source
+            new_props['source'] = get_previous_version(
+                entry.meta['version_id']).source
         elif entry.type == ArticleLogEntry.LogEntryType.Title:
             new_props['title'] = entry.meta['prev_title']
         elif entry.type == ArticleLogEntry.LogEntryType.Name:
@@ -188,13 +190,15 @@ def revert_article_version(full_name_or_article: _FullNameOrArticle, rev_number:
         elif entry.type == ArticleLogEntry.LogEntryType.FileRenamed:
             if 'files_renamed' not in new_props:
                 new_props['files_renamed'] = {}
-            new_props['files_renamed'][entry.meta['id']] = entry.meta['prev_name']
+            new_props['files_renamed'][entry.meta['id']
+                                       ] = entry.meta['prev_name']
         elif entry.type == ArticleLogEntry.LogEntryType.Wikidot:
             # this is a fake revision type.
             pass
         elif entry.type == ArticleLogEntry.LogEntryType.Revert:
             if 'source' in entry.meta:
-                new_props['source'] = get_previous_version(entry.meta['source']['version_id']).source
+                new_props['source'] = get_previous_version(
+                    entry.meta['source']['version_id']).source
             if 'title' in entry.meta:
                 new_props['title'] = entry.meta['title']['prev_title']
             if 'name' in entry.meta:
@@ -247,7 +251,8 @@ def revert_article_version(full_name_or_article: _FullNameOrArticle, rev_number:
     for f_id, new_name in new_props.get('files_renamed', {}).items():
         try:
             file = File.objects.get(id=f_id)
-            files_renamed_meta.append({'id': f_id, 'name': new_name, 'prev_name': file.name})
+            files_renamed_meta.append(
+                {'id': f_id, 'name': new_name, 'prev_name': file.name})
             file.name = new_name
             file.save()
         except File.DoesNotExist:
@@ -326,7 +331,8 @@ def revert_article_version(full_name_or_article: _FullNameOrArticle, rev_number:
 
     if 'title' in new_props:
         subtypes.append(ArticleLogEntry.LogEntryType.Title)
-        meta['title'] = {'prev_title': article.title, 'title': new_props['title']}
+        meta['title'] = {'prev_title': article.title,
+                         'title': new_props['title']}
         article.title = new_props['title']
         article.save()
 
@@ -400,14 +406,17 @@ def refresh_article_links(article_version: ArticleVersion):
     ExternalLink.objects.filter(link_from=article_name).delete()
     # parse current source
     already_added = []
-    rc = RenderContext(article=article_version.article, source_article=article_version.article, path_params={}, user=None)
-    linked_pages, included_pages = renderer.single_pass_fetch_backlinks(article_version.source, rc)
+    rc = RenderContext(article=article_version.article,
+                       source_article=article_version.article, path_params={}, user=None)
+    linked_pages, included_pages = renderer.single_pass_fetch_backlinks(
+        article_version.source, rc)
     for linked_page in linked_pages:
         kt = '%s:include:%s' % (article_name.lower(), linked_page.lower())
         if kt in already_added:
             continue
         already_added.append(kt)
-        new_link = ExternalLink(link_from=article_name.lower(), link_type=ExternalLink.Type.Include, link_to=linked_page.lower())
+        new_link = ExternalLink(link_from=article_name.lower(
+        ), link_type=ExternalLink.Type.Include, link_to=linked_page.lower())
         new_link.save()
     # find links
     for included_page in included_pages:
@@ -415,7 +424,8 @@ def refresh_article_links(article_version: ArticleVersion):
         if kt in already_added:
             continue
         already_added.append(kt)
-        new_link = ExternalLink(link_from=article_name.lower(), link_type=ExternalLink.Type.Link, link_to=included_page.lower())
+        new_link = ExternalLink(link_from=article_name.lower(
+        ), link_type=ExternalLink.Type.Link, link_to=included_page.lower())
         new_link.save()
 
 
@@ -430,8 +440,10 @@ def update_full_name(full_name_or_article: _FullNameOrArticle, new_full_name: st
     article.save()
 
     # update links
-    ExternalLink.objects.filter(link_from__iexact=new_full_name).delete()  # this should not happen, but just to be sure
-    ExternalLink.objects.filter(link_from__iexact=prev_full_name).update(link_from=new_full_name)
+    # this should not happen, but just to be sure
+    ExternalLink.objects.filter(link_from__iexact=new_full_name).delete()
+    ExternalLink.objects.filter(
+        link_from__iexact=prev_full_name).update(link_from=new_full_name)
 
     if log:
         log = ArticleLogEntry(
@@ -460,9 +472,11 @@ def update_title(full_name_or_article: _FullNameOrArticle, new_title: str, user:
 
 def delete_article(full_name_or_article: _FullNameOrArticle):
     article = get_article(full_name_or_article)
-    ExternalLink.objects.filter(link_from__iexact=get_full_name(full_name_or_article)).delete()
+    ExternalLink.objects.filter(
+        link_from__iexact=get_full_name(full_name_or_article)).delete()
     article.delete()
-    file_storage = Path(settings.MEDIA_ROOT) / article.site.slug / article.media_name
+    file_storage = Path(settings.MEDIA_ROOT) / \
+        article.site.slug / article.media_name
     # this may have race conditions with file upload, because filesystem does not know about database transactions
     for i in range(3):
         try:
@@ -494,7 +508,8 @@ def get_version(version_id: int) -> Optional[ArticleVersion]:
 def get_previous_version(version_id: int) -> Optional[ArticleVersion]:
     try:
         version = ArticleVersion.objects.get(id=version_id)
-        prev_version = ArticleVersion.objects.filter(article_id=version.article_id, created_at__lt=version.created_at).order_by('-created_at')[:1]
+        prev_version = ArticleVersion.objects.filter(
+            article_id=version.article_id, created_at__lt=version.created_at).order_by('-created_at')[:1]
         if not prev_version:
             return None
         return prev_version[0]
@@ -507,7 +522,8 @@ def get_latest_version(full_name_or_article: _FullNameOrArticle) -> Optional[Art
     article = get_article(full_name_or_article)
     if article is None:
         return None
-    latest_version = ArticleVersion.objects.filter(article=article).order_by('-created_at')[:1]
+    latest_version = ArticleVersion.objects.filter(
+        article=article).order_by('-created_at')[:1]
     if latest_version:
         return latest_version[0]
 
@@ -542,7 +558,8 @@ def set_parent(full_name_or_article: _FullNameOrArticle, full_name_of_parent: _F
         article=article,
         user=user,
         type=ArticleLogEntry.LogEntryType.Parent,
-        meta={'parent': full_name_of_parent, 'prev_parent': prev_parent, 'parent_id': parent_id, 'prev_parent_id': prev_parent_id}
+        meta={'parent': full_name_of_parent, 'prev_parent': prev_parent,
+              'parent_id': parent_id, 'prev_parent_id': prev_parent_id}
     )
     add_log_entry(article, log)
 
@@ -570,7 +587,8 @@ def get_category(full_name_or_category: _FullNameOrCategory) -> Optional[Categor
 
 
 def get_article_category(full_name_or_article: _FullNameOrArticle) -> Optional[Category]:
-    name = get_name(full_name_or_article)[0] if type(full_name_or_article) == str else full_name_or_article.category
+    name = get_name(full_name_or_article)[0] if type(
+        full_name_or_article) == str else full_name_or_article.category
     return get_category(name)
 
 
@@ -591,7 +609,8 @@ def get_tags(full_name_or_article: _FullNameOrArticle) -> Sequence[str]:
 def set_tags(full_name_or_article: _FullNameOrArticle, tags: Sequence[str], user: Optional[_UserType] = None, log: bool = True):
     article = get_article(full_name_or_article)
     article_tags = article.tags.all()
-    tags = [Tag.objects.get_or_create(name=x.lower())[0] for x in tags if is_tag_name_allowed(x)]
+    tags = [Tag.objects.get_or_create(name=x.lower())[0]
+            for x in tags if is_tag_name_allowed(x)]
 
     removed_tags = []
     added_tags = []
@@ -608,7 +627,8 @@ def set_tags(full_name_or_article: _FullNameOrArticle, tags: Sequence[str], user
             added_tags.append(tag.name)
 
     # garbage collect tags if anything was removed
-    Tag.objects.annotate(num_articles=Count('articles')).filter(num_articles=0).delete()
+    Tag.objects.annotate(num_articles=Count('articles')
+                         ).filter(num_articles=0).delete()
 
     if (removed_tags or added_tags) and log:
         log = ArticleLogEntry(
@@ -638,15 +658,18 @@ def get_rating(full_name_or_article: _FullNameOrArticle) -> (int | float, int, S
         return 0, 0, Settings.RatingMode.Disabled
     obj_settings = article.get_settings()
     if obj_settings.rating_mode == Settings.RatingMode.UpDown:
-        data = Vote.objects.filter(article=article).aggregate(sum=Coalesce(Sum('rate'), 0, output_field=IntegerField()), count=Count('rate'))
+        data = Vote.objects.filter(article=article).aggregate(sum=Coalesce(
+            Sum('rate'), 0, output_field=IntegerField()), count=Count('rate'))
         return data['sum'] or 0, data['count'] or 0, obj_settings.rating_mode
     elif obj_settings.rating_mode == Settings.RatingMode.Stars:
-        data = Vote.objects.filter(article=article).aggregate(avg=Coalesce(Avg('rate'), 0.0), count=Count('rate'))
+        data = Vote.objects.filter(article=article).aggregate(
+            avg=Coalesce(Avg('rate'), 0.0), count=Count('rate'))
         return round(data['avg'], 1) or 0.0, data['count'] or 0, obj_settings.rating_mode
     elif obj_settings.rating_mode == Settings.RatingMode.Disabled:
         return 0, 0, obj_settings.rating_mode
     else:
-        raise ValueError('Unsupported rate type "%s"' % obj_settings.rating_mode)
+        raise ValueError('Unsupported rate type "%s"' %
+                         obj_settings.rating_mode)
 
 
 def get_formatted_rating(full_name_or_article: _FullNameOrArticle) -> str:
@@ -684,7 +707,8 @@ def get_file_in_article(full_name_or_article: _FullNameOrArticle, file_name: str
     article = get_article(full_name_or_article)
     if article is None:
         return None
-    files = File.objects.filter(article=article, name__iexact=file_name, deleted_at__isnull=True)
+    files = File.objects.filter(
+        article=article, name__iexact=file_name, deleted_at__isnull=True)
     if not files:
         return None
     return files[0]
@@ -716,18 +740,21 @@ def add_file_to_article(full_name_or_article: _FullNameOrArticle, file: File, us
 
 
 def get_file_space_usage() -> (int, int):
-    current_files_size = File.objects.filter(deleted_at=None).aggregate(size=Sum('size')).get('size') or 0
-    absolute_files_size = File.objects.aggregate(size=Sum('size')).get('size') or 0
+    current_files_size = File.objects.filter(
+        deleted_at=None).aggregate(size=Sum('size')).get('size') or 0
+    absolute_files_size = File.objects.aggregate(
+        size=Sum('size')).get('size') or 0
     return current_files_size, absolute_files_size
 
 
 # Delete file from article.
 # Permanent deletion is irreversible and should not be used unless for technical cleanup purposes or from admin panel.
 # We also cannot track who performed a permanent deletion.
-def delete_file_from_article(full_name_or_article: _FullNameOrArticle, file: File, user: Optional[_UserType] = None, permanent = False):
+def delete_file_from_article(full_name_or_article: _FullNameOrArticle, file: File, user: Optional[_UserType] = None, permanent=False):
     article = get_article(full_name_or_article)
     if file.article != article:
-        raise ValueError(f'File article "{get_full_name(article)}" is not the same as "{article.full_name}" for deletion')
+        raise ValueError(
+            f'File article "{get_full_name(article)}" is not the same as "{article.full_name}" for deletion')
     if file.deleted_at and not permanent:
         raise ValueError('File is already deleted')
     if permanent:
@@ -751,7 +778,8 @@ def delete_file_from_article(full_name_or_article: _FullNameOrArticle, file: Fil
 def restore_file_from_article(full_name_or_article: _FullNameOrArticle, file: File, user: Optional[_UserType] = None):
     article = get_article(full_name_or_article)
     if file.article != article:
-        raise ValueError(f'File article "{get_full_name(article)}" is not the same as "{article.full_name}" for restoration')
+        raise ValueError(
+            f'File article "{get_full_name(article)}" is not the same as "{article.full_name}" for restoration')
     if not file.deleted_at:
         raise ValueError('File is not deleted')
     file.deleted_at = None
@@ -770,7 +798,8 @@ def restore_file_from_article(full_name_or_article: _FullNameOrArticle, file: Fi
 def rename_file_in_article(full_name_or_article: _FullNameOrArticle, file: File, name: str, user: Optional[_UserType] = None):
     article = get_article(full_name_or_article)
     if file.article != article:
-        raise ValueError(f'File article "{get_full_name(article)}" is not the same as "{article.full_name}" for renaming')
+        raise ValueError(
+            f'File article "{get_full_name(article)}" is not the same as "{article.full_name}" for renaming')
     old_name = file.name
     file.name = name
     file.save()
@@ -802,7 +831,8 @@ def is_full_name_allowed(article_name: str) -> bool:
 
 # Fetch multiple articles by names
 def fetch_articles_by_names(original_names):
-    names = list(dict.fromkeys([('_default:%s' % x).lower() if ':' not in x else x.lower() for x in original_names]))
+    names = list(dict.fromkeys([('_default:%s' % x).lower(
+    ) if ':' not in x else x.lower() for x in original_names]))
     all_articles = Article.objects.annotate(
         dumb_name=Lower(Concat('category', Value(':'), 'name', output_field=TextField()))).filter(dumb_name__in=names)
     ret_map = dict()
@@ -810,6 +840,7 @@ def fetch_articles_by_names(original_names):
         ret_map[article.dumb_name] = article
     articles_dict = dict()
     for name in original_names:
-        dumb_name = ('_default:%s' % name).lower() if ':' not in name else name.lower()
+        dumb_name = ('_default:%s' % name).lower(
+        ) if ':' not in name else name.lower()
         articles_dict[name] = ret_map[dumb_name]
     return articles_dict

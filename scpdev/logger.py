@@ -18,5 +18,4 @@ class SimpleFormatter(logging.Formatter):
         except:
             pass
 
-        return ' %s  %s'%(prepend, super().format(record))
-
+        return ' %s  %s' % (prepend, super().format(record))

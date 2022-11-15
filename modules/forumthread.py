@@ -20,7 +20,8 @@ def has_content():
 
 def get_post_contents(posts):
     post_ids = [x.id for x in posts]
-    post_contents = ForumPostVersion.objects.order_by('post_id', '-created_at').distinct('post_id').filter(post_id__in=post_ids)
+    post_contents = ForumPostVersion.objects.order_by(
+        'post_id', '-created_at').distinct('post_id').filter(post_id__in=post_ids)
     ret = {}
     for content in post_contents:
         ret[content.post_id] = (content.source, content.author)
@@ -32,7 +33,8 @@ def get_post_info(context, thread, posts, show_replies=True):
     post_info = []
 
     for post in posts:
-        replies = ForumPost.objects.filter(reply_to=post).order_by('created_at') if show_replies else []
+        replies = ForumPost.objects.filter(reply_to=post).order_by(
+            'created_at') if show_replies else []
         render_post = {
             'id': post.id,
             'name': post.name,
@@ -63,7 +65,8 @@ def get_post_info(context, thread, posts, show_replies=True):
 
 def render_posts(post_info):
     for i in post_info:
-        i['rendered_replies'] = render_posts(i['replies']) if i['replies'] else ''
+        i['rendered_replies'] = render_posts(
+            i['replies']) if i['replies'] else ''
     return render_template_from_string(
         """
         {% for post in posts %}
@@ -126,12 +129,14 @@ def render(context: RenderContext, params):
 
     context.title += ' — ' + name
 
-    category_url = '/forum/c-%d/%s' % (category.id, articles.normalize_article_name(category.name)) if category else ''
+    category_url = '/forum/c-%d/%s' % (
+        category.id, articles.normalize_article_name(category.name)) if category else ''
     short_url = '/forum/t-%d' % thread.id
 
     per_page = 10
 
-    q = ForumPost.objects.filter(thread=thread, reply_to__isnull=True).order_by('created_at')
+    q = ForumPost.objects.filter(
+        thread=thread, reply_to__isnull=True).order_by('created_at')
 
     total = q.count()
 
@@ -196,7 +201,8 @@ def render(context: RenderContext, params):
                 continue
             if not permissions.check(context.user, 'view', c):
                 continue
-            cs.append({'name': '\u00a0\u00a0'+c.name, 'canMove': not c.is_for_comments, 'id': c.id})
+            cs.append({'name': '\u00a0\u00a0'+c.name,
+                      'canMove': not c.is_for_comments, 'id': c.id})
         if cs:
             categories.append({'name': s.name, 'canMove': False, 'id': None})
             categories += cs
@@ -269,10 +275,12 @@ def render(context: RenderContext, params):
         created_by=render_user_to_html(thread.author),
         created_at=render_date(thread.created_at),
         total_posts=total,
-        pagination=render_pagination(short_url, page, max_page) if max_page != 1 else '',
+        pagination=render_pagination(
+            short_url, page, max_page) if max_page != 1 else '',
         new_post_config=json.dumps(new_post_config),
         posts=render_posts(post_info),
-        can_reply=permissions.check(context.user, 'create', ForumPost(thread=thread)),
+        can_reply=permissions.check(
+            context.user, 'create', ForumPost(thread=thread)),
         content_only=content_only,
         data_path_params=json.dumps(context.path_params),
         data_params=json.dumps(params),
@@ -336,7 +344,8 @@ def api_update(context, params):
             category = ForumCategory.objects.filter(id=c)
             category = category[0] if category else None
             if not permissions.check(context.user, 'view', category):
-                raise ModuleError('Недостаточно прав для просмотра целевого раздела')
+                raise ModuleError(
+                    'Недостаточно прав для просмотра целевого раздела')
         except:
             category = None
         if category is None:

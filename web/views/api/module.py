@@ -22,7 +22,8 @@ class ModuleView(APIView):
         method = data.get('method', None)
         # downcase keys
         params = {key.lower(): value for (key, value) in params.items()}
-        path_params = {key.lower(): value for (key, value) in path_params.items()}
+        path_params = {key.lower(): value for (
+            key, value) in path_params.items()}
         # load page
         article = articles.get_article(page_id)
         context = RenderContext(article, article, path_params, request.user)
@@ -31,7 +32,8 @@ class ModuleView(APIView):
         # attempt to call module
         try:
             if method == 'render':
-                result = modules.render_module(module, context, params, content=content)
+                result = modules.render_module(
+                    module, context, params, content=content)
                 return self.render_json(200, {'result': result})
             else:
                 response = modules.handle_api(module, method, context, params)

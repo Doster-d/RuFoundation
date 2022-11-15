@@ -39,21 +39,25 @@ class MediaHostMiddleware(object):
             raw_host = request.get_host()
             if ':' not in raw_host and 'SERVER_PORT' in request.META:
                 raw_host += ':' + request.META['SERVER_PORT']
-                possible_sites = Site.objects.filter(Q(domain=raw_host) | Q(media_domain=raw_host))
+                possible_sites = Site.objects.filter(
+                    Q(domain=raw_host) | Q(media_domain=raw_host))
             else:
                 possible_sites = []
             if not possible_sites:
                 # find site by domain
                 raw_host = request.get_host().split(':')[0]
-                possible_sites = Site.objects.filter(Q(domain=raw_host) | Q(media_domain=raw_host))
+                possible_sites = Site.objects.filter(
+                    Q(domain=raw_host) | Q(media_domain=raw_host))
                 if not possible_sites:
-                    raise RuntimeError('Site for this domain (\'%s\') is not configured' % raw_host)
+                    raise RuntimeError(
+                        'Site for this domain (\'%s\') is not configured' % raw_host)
 
             site = possible_sites[0]
             threadvars.put('current_site', site)
 
             if site.media_domain != site.domain:
-                is_media_host = request.get_host().split(':')[0] == site.media_domain
+                is_media_host = request.get_host().split(
+                    ':')[0] == site.media_domain
                 is_media_url = request.path.startswith(settings.MEDIA_URL)
 
                 non_media_host = site.domain

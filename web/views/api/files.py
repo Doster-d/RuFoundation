@@ -31,7 +31,8 @@ class GetOrUploadView(FileView):
         output = []
         current_files_size, absolute_files_size = articles.get_file_space_usage()
         for file in files:
-            output.append({'name': file.name, 'size': file.size, 'createdAt': file.created_at, 'author': render_user_to_json(file.author), 'mimeType': file.mime_type})
+            output.append({'name': file.name, 'size': file.size, 'createdAt': file.created_at,
+                          'author': render_user_to_json(file.author), 'mimeType': file.mime_type})
         data = {
             'pageId': article.full_name,
             'files': output,
@@ -53,7 +54,8 @@ class GetOrUploadView(FileView):
             raise APIError('Файл с таким именем уже существует', 409)
         _, ext = os.path.splitext(file_name)
         media_name = str(uuid4()) + ext
-        new_file = File(name=file_name, media_name=media_name, author=request.user, article=article)
+        new_file = File(name=file_name, media_name=media_name,
+                        author=request.user, article=article)
         local_media_dir = os.path.dirname(new_file.local_media_path)
         if not os.path.exists(local_media_dir):
             os.makedirs(local_media_dir, exist_ok=True)
@@ -73,7 +75,8 @@ class GetOrUploadView(FileView):
                         break
                     f.write(chunk)
             new_file.size = size
-            new_file.mime_type = request.headers.get('content-type', 'application/octet-stream')
+            new_file.mime_type = request.headers.get(
+                'content-type', 'application/octet-stream')
             articles.add_file_to_article(article, new_file, user=request.user)
         except:
             if os.path.exists(new_file.local_media_path):
@@ -100,5 +103,6 @@ class RenameOrDeleteView(FileView):
         data = self.json_input
         if not isinstance(data, dict) or 'name' not in data:
             raise APIError('Некорректный запрос', 400)
-        articles.rename_file_in_article(article, file, data['name'], user=request.user)
+        articles.rename_file_in_article(
+            article, file, data['name'], user=request.user)
         return self.render_json(200, {'status': 'ok'})

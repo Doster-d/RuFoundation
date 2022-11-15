@@ -14,22 +14,26 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='forumthread',
             name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now, verbose_name='Время создания'),
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now, verbose_name='Время создания'),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='forumthread',
             name='deleted_at',
-            field=models.DateTimeField(null=True, verbose_name='Время удаления'),
+            field=models.DateTimeField(
+                null=True, verbose_name='Время удаления'),
         ),
         migrations.AddField(
             model_name='forumthread',
             name='updated_at',
-            field=models.DateTimeField(auto_now=True, verbose_name='Время изменения'),
+            field=models.DateTimeField(
+                auto_now=True, verbose_name='Время изменения'),
         ),
         migrations.AlterField(
             model_name='forumpost',
             name='deleted_at',
-            field=models.DateTimeField(null=True, verbose_name='Время удаления'),
+            field=models.DateTimeField(
+                null=True, verbose_name='Время удаления'),
         ),
     ]

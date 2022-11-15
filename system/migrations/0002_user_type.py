@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='type',
-            field=models.TextField(choices=[('normal', 'Normal'), ('wikidot', 'Wikidot'), ('system', 'System')], default='normal', verbose_name='Тип'),
+            field=models.TextField(choices=[('normal', 'Normal'), ('wikidot', 'Wikidot'), (
+                'system', 'System')], default='normal', verbose_name='Тип'),
         ),
     ]

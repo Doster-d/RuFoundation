@@ -18,7 +18,8 @@ class UrlCache(object):
         except KeyError:
             with cls._lock:
                 try:
-                    md5 = cls.calc_md5(path.join(settings.STATIC_ROOT, file))[:8]
+                    md5 = cls.calc_md5(
+                        path.join(settings.STATIC_ROOT, file))[:8]
                     value = '%s%s?v=%s' % (settings.STATIC_URL, file, md5)
                 except (IsADirectoryError, FileNotFoundError):
                     value = settings.STATIC_URL + file

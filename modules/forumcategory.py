@@ -40,7 +40,8 @@ def render(context: RenderContext, params):
 
     context.title += ' — ' + category.name
 
-    canonical_url = '/forum/c-%d/%s' % (category.id, articles.normalize_article_name(category.name))
+    canonical_url = '/forum/c-%d/%s' % (category.id,
+                                        articles.normalize_article_name(category.name))
     short_url = '/forum/c-%d' % category.id
 
     # get threads
@@ -79,9 +80,11 @@ def render(context: RenderContext, params):
         last_post_url = None
         last_post_user = None
         last_post_date = None
-        url = '/forum/t-%d/%s' % (thread.id, articles.normalize_article_name(thread.name if thread.category_id else thread.article.display_name))
+        url = '/forum/t-%d/%s' % (thread.id, articles.normalize_article_name(
+            thread.name if thread.category_id else thread.article.display_name))
         if post_count:
-            last_post = posts[post_count-1]  # do not use -1 to avoid checking count twice
+            # do not use -1 to avoid checking count twice
+            last_post = posts[post_count-1]
             last_post_url = '%s#post-%d' % (url, last_post.id)
             last_post_date = render_date(last_post.created_at)
             last_post_user = render_user_to_html(last_post.author)
@@ -187,5 +190,6 @@ def render(context: RenderContext, params):
         canonical_url=canonical_url,
         short_url=short_url,
         threads=render_threads,
-        pagination=render_pagination(short_url, page, max_page) if max_page != 1 else ''
+        pagination=render_pagination(
+            short_url, page, max_page) if max_page != 1 else ''
     )

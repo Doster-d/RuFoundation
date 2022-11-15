@@ -51,9 +51,12 @@ class Command(BaseRunserverCommand):
 
     def add_arguments(self, parser):
         super().add_arguments(parser)
-        parser.add_argument('--watch', action='store_true', dest='watch', help='Runs JS build in development mode')
-        parser.add_argument('--ftml-release', action='store_true', dest='ftml_release', help='Build FTML in release mode')
-        parser.add_argument('--internal-run', action='store_true', dest='internal_run', help='This starts the actual server')
+        parser.add_argument('--watch', action='store_true',
+                            dest='watch', help='Runs JS build in development mode')
+        parser.add_argument('--ftml-release', action='store_true',
+                            dest='ftml_release', help='Build FTML in release mode')
+        parser.add_argument('--internal-run', action='store_true',
+                            dest='internal_run', help='This starts the actual server')
 
     def handle(self, *args, **options):
         if not options['watch'] or options['internal_run']:
@@ -69,7 +72,8 @@ class Command(BaseRunserverCommand):
             return
         print('Will watch JS '+repr(self))
         base_project_dir = os.path.dirname(__file__) + '/../..'
-        p = subprocess.Popen(['yarn', 'run', 'watch'], shell=_SHELL, cwd=base_project_dir+'/js')
+        p = subprocess.Popen(['yarn', 'run', 'watch'],
+                             shell=_SHELL, cwd=base_project_dir+'/js')
         atexit.register(lambda: _safe_kill(p))
         _ALREADY_WATCHING = True
 
@@ -77,7 +81,8 @@ class Command(BaseRunserverCommand):
     def run_child(self, second=False):
         add_args = ['--skip-checks']
         # with shell=False it does NOT interrupt as intended
-        c = subprocess.Popen([sys.executable] + sys.argv + ['--internal-run', '--noreload'] + add_args, shell=_SHELL)
+        c = subprocess.Popen([sys.executable] + sys.argv +
+                             ['--internal-run', '--noreload'] + add_args, shell=_SHELL)
         return c
 
     def watch_ftml(self, ftml_release=False):
@@ -159,7 +164,8 @@ class Command(BaseRunserverCommand):
                 current_child = self.run_child(True)
             else:
                 rel_cmdline = ['--release'] if ftml_release else []
-                p = subprocess.Popen(['cargo', 'build'] + rel_cmdline, cwd=base_project_dir)
+                p = subprocess.Popen(
+                    ['cargo', 'build'] + rel_cmdline, cwd=base_project_dir)
                 code = p.wait()
                 if code != 0:
                     print('FTML compilation failed; skipping')
@@ -181,14 +187,16 @@ class Command(BaseRunserverCommand):
                         copied = False
                         for i in range(30):
                             try:
-                                shutil.copy(base_project_dir + target_dir + file, base_project_dir + '/' + new_filename)
+                                shutil.copy(
+                                    base_project_dir + target_dir + file, base_project_dir + '/' + new_filename)
                                 copied = True
                                 break
                             except PermissionError:
                                 print('Could not replace FTML library, retrying...')
                             time.sleep(1)
                         if not copied:
-                            print('Fatal: could not unlock FTML dynamic library, reloading is not possible. Is this the only instance running?')
+                            print(
+                                'Fatal: could not unlock FTML dynamic library, reloading is not possible. Is this the only instance running?')
                             return
                         # Create another instance of runserver
                         print('Reloading...')

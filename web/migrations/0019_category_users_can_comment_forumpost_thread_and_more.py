@@ -14,12 +14,14 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='users_can_comment',
-            field=models.BooleanField(default=True, verbose_name='Пользователи могут комментировать статьи'),
+            field=models.BooleanField(
+                default=True, verbose_name='Пользователи могут комментировать статьи'),
         ),
         migrations.AddField(
             model_name='forumpost',
             name='thread',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.forumthread', verbose_name='Тема'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='web.forumthread', verbose_name='Тема'),
             preserve_default=False,
         ),
         migrations.AlterField(
@@ -30,7 +32,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='forumcategory',
             name='order',
-            field=models.IntegerField(blank=True, default=0, verbose_name='Порядок сортировки'),
+            field=models.IntegerField(
+                blank=True, default=0, verbose_name='Порядок сортировки'),
         ),
         migrations.AlterField(
             model_name='forumpost',
@@ -45,7 +48,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='forumsection',
             name='order',
-            field=models.IntegerField(blank=True, default=0, verbose_name='Порядок сортировки'),
+            field=models.IntegerField(
+                blank=True, default=0, verbose_name='Порядок сортировки'),
         ),
         migrations.AlterField(
             model_name='forumthread',

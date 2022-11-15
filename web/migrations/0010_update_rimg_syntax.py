@@ -33,7 +33,8 @@ def convert_rimg(apps, schema_editor):
             print('%d...' % done, end='')
             import sys
             sys.stdout.flush()
-        latest_version = ArticleVersion.objects.using(db).filter(article=article).order_by('-created_at')
+        latest_version = ArticleVersion.objects.using(
+            db).filter(article=article).order_by('-created_at')
         if not latest_version:
             continue
         latest_version = latest_version[0]

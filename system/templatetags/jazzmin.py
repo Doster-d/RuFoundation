@@ -59,13 +59,15 @@ def get_side_menu(context: Context, using: str = "available_apps") -> list[dict]
             if not model:
                 continue
             print(repr(model))
-            model_str = "{app_label}.{model}".format(app_label=app_label, model=model["object_name"]).lower()
+            model_str = "{app_label}.{model}".format(
+                app_label=app_label, model=model["object_name"]).lower()
             if model_str in options.get("hide_models", []):
                 continue
             item = copy.deepcopy(model)
             item["url"] = item["admin_url"]
             item["model_str"] = model_str
-            item["icon"] = options["icons"].get(model_str, options["default_icon_children"])
+            item["icon"] = options["icons"].get(
+                model_str, options["default_icon_children"])
             app["models"].append(item)
         if not app["models"]:
             continue

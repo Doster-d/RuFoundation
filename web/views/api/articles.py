@@ -45,10 +45,12 @@ class CreateView(ArticleView):
             raise APIError('Страница с таким ID уже существует', 409)
 
         # create page
-        article = articles.create_article(articles.normalize_article_name(data['pageId']), request.user)
+        article = articles.create_article(
+            articles.normalize_article_name(data['pageId']), request.user)
         article.title = data['title']
         article.save()
-        version = articles.create_article_version(article, data['source'], request.user)
+        version = articles.create_article_version(
+            article, data['source'], request.user)
         articles.refresh_article_links(version)
 
         return self.render_json(201, {'status': 'ok'})
@@ -92,7 +94,8 @@ class FetchOrUpdateView(ArticleView):
             article2 = articles.get_article(data['pageId'])
             if article2 is not None:
                 raise APIError('Страница с таким ID уже существует', 409)
-            articles.update_full_name(article, articles.normalize_article_name(data['pageId']), request.user)
+            articles.update_full_name(
+                article, articles.normalize_article_name(data['pageId']), request.user)
 
         # check if changing title
         if 'title' in data and data['title'] != article.title:
@@ -100,7 +103,8 @@ class FetchOrUpdateView(ArticleView):
 
         # check if changing source
         if 'source' in data and data['source'] != articles.get_latest_source(article):
-            version = articles.create_article_version(article, data['source'], request.user, data.get('comment', ''))
+            version = articles.create_article_version(
+                article, data['source'], request.user, data.get('comment', ''))
             articles.refresh_article_links(version)
 
         # check if changing tags
@@ -144,7 +148,8 @@ class FetchOrRevertLogView(APIView):
         except ValueError:
             raise APIError('Некорректное указание ограничений списка', 400)
 
-        log_entries, total_count = articles.get_log_entries_paged(full_name, c_from, c_to, get_all)
+        log_entries, total_count = articles.get_log_entries_paged(
+            full_name, c_from, c_to, get_all)
 
         output = []
         for entry in log_entries:
@@ -173,7 +178,8 @@ class FetchOrRevertLogView(APIView):
         if not ("revNumber" in data and isinstance(data["revNumber"], int)):
             raise APIError('Некорректный номер ревизии', 400)
 
-        articles.revert_article_version(article, data["revNumber"], request.user)
+        articles.revert_article_version(
+            article, data["revNumber"], request.user)
         version = articles.get_latest_version(article)
         articles.refresh_article_links(version)
 
@@ -193,7 +199,8 @@ class FetchVersionView(APIView):
     def get(self, request: HttpRequest, full_name: str) -> HttpResponse:
         entry = articles.get_log_entry(full_name, request.GET.get('revNum'))
         if not entry:
-            raise APIError('Версии с данным идентификатором не существует', 404)
+            raise APIError(
+                'Версии с данным идентификатором не существует', 404)
 
         version = self.get_version_from_meta(entry.meta)
         if not version:
@@ -229,7 +236,8 @@ class FetchExternalLinks(APIView):
         links_include = []
         links_links = []
 
-        articles_dict = articles.fetch_articles_by_names([link.link_from.lower() for link in links_all])
+        articles_dict = articles.fetch_articles_by_names(
+            [link.link_from.lower() for link in links_all])
 
         for link in links_all:
             article = articles_dict.get(link.link_from.lower())

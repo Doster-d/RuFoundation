@@ -14,7 +14,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='forumpostversion',
             name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now, verbose_name='Время создания'),
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now, verbose_name='Время создания'),
             preserve_default=False,
         ),
     ]
