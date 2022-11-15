@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='api_key',
-            field=models.CharField(blank=True, max_length=67, null=True, unique=True, verbose_name='Апи-ключ'),
+            field=models.CharField(
+                blank=True, max_length=67, null=True, unique=True, verbose_name='Апи-ключ'),
         ),
     ]

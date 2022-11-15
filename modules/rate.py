@@ -62,7 +62,8 @@ def api_get_votes(context, _params):
     votes = []
     rating, _, mode = articles.get_rating(context.article)
     for db_vote in Vote.objects.filter(article=context.article).order_by('-user__username'):
-        votes.append({'user': render_user_to_json(db_vote.user), 'value': db_vote.rate})
+        votes.append({'user': render_user_to_json(
+            db_vote.user), 'value': db_vote.rate})
     return {'pageId': context.article.full_name, 'votes': votes, 'rating': rating, 'mode': mode}
 
 

@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='forumthread',
             name='is_pinned',
-            field=models.BooleanField(default=False, verbose_name='Пришпилено'),
+            field=models.BooleanField(
+                default=False, verbose_name='Пришпилено'),
         ),
     ]

@@ -22,7 +22,8 @@ def get_post_info(context, posts, category_for_comments):
     post_info = []
 
     for post in posts:
-        thread_url = '/forum/t-%d/%s' % (post.thread.id, articles.normalize_article_name(post.thread.name if post.thread.category_id else post.thread.article.display_name))
+        thread_url = '/forum/t-%d/%s' % (post.thread.id, articles.normalize_article_name(
+            post.thread.name if post.thread.category_id else post.thread.article.display_name))
         render_post = {
             'id': post.id,
             'name': post.name.strip() or 'Перейти к сообщению',
@@ -55,7 +56,8 @@ def get_post_info(context, posts, category_for_comments):
 def render(context: RenderContext, params):
     context.title = 'Последние сообщения форума'
 
-    all_categories = [x for x in ForumCategory.objects.order_by('order', 'id') if permissions.check(context.user, 'view', x)]
+    all_categories = [x for x in ForumCategory.objects.order_by(
+        'order', 'id') if permissions.check(context.user, 'view', x)]
 
     category_param = '*'
 
@@ -89,7 +91,8 @@ def render(context: RenderContext, params):
 
     if category is None:
         if are_comments_shown:
-            q = ForumPost.objects.filter(Q(thread__category__in=all_categories) | Q(thread__article__isnull=False))
+            q = ForumPost.objects.filter(
+                Q(thread__category__in=all_categories) | Q(thread__article__isnull=False))
         else:
             q = ForumPost.objects.filter(thread__category__in=all_categories)
     else:
@@ -126,7 +129,8 @@ def render(context: RenderContext, params):
         for c in raw_categories:
             if c.section_id != s.id:
                 continue
-            cs.append({'name': '\u00a0\u00a0'+c.name, 'canSelect': True, 'id': c.id})
+            cs.append({'name': '\u00a0\u00a0'+c.name,
+                      'canSelect': True, 'id': c.id})
         if cs:
             categories.append({'name': s.name, 'canSelect': False, 'id': None})
             categories += cs
@@ -189,7 +193,8 @@ def render(context: RenderContext, params):
         """,
         posts=post_info,
         categories=categories,
-        pagination=render_pagination(None, page, max_page) if max_page != 1 else '',
+        pagination=render_pagination(
+            None, page, max_page) if max_page != 1 else '',
         data_path_params=json.dumps(context.path_params),
         data_params=json.dumps(params),
         category_param=category_param

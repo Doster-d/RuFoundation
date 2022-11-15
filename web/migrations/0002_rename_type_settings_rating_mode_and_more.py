@@ -27,11 +27,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='settings',
             name='category',
-            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='settings', to='web.category'),
+            field=models.OneToOneField(
+                null=True, on_delete=django.db.models.deletion.CASCADE, related_name='settings', to='web.category'),
         ),
         migrations.AddField(
             model_name='settings',
             name='site',
-            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='settings', to='web.site'),
+            field=models.OneToOneField(
+                null=True, on_delete=django.db.models.deletion.CASCADE, related_name='settings', to='web.site'),
         ),
     ]

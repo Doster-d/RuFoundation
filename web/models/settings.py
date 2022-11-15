@@ -12,10 +12,13 @@ class Settings(models.Model):
         UpDown = 'updown'
         Stars = 'stars'
 
-    site = models.OneToOneField('Site', on_delete=models.CASCADE, null=True, related_name='_settings')
-    category = models.OneToOneField('Category', on_delete=models.CASCADE, null=True, related_name='_settings')
+    site = models.OneToOneField(
+        'Site', on_delete=models.CASCADE, null=True, related_name='_settings')
+    category = models.OneToOneField(
+        'Category', on_delete=models.CASCADE, null=True, related_name='_settings')
 
-    rating_mode = models.TextField(choices=RatingMode.choices, default=RatingMode.Default, verbose_name="Система рейтинга", null=False)
+    rating_mode = models.TextField(
+        choices=RatingMode.choices, default=RatingMode.Default, verbose_name="Система рейтинга", null=False)
 
     # Hierarchy:
     # DEFAULT_SETTINGS -> site settings -> category settings
@@ -29,5 +32,3 @@ class Settings(models.Model):
         new_settings = Settings()
         new_settings.rating_mode = other.rating_mode if other.rating_mode != Settings.RatingMode.Default else self.rating_mode
         return new_settings
-
-

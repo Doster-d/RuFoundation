@@ -32,7 +32,8 @@ def callbacks_with_context(context):
             return modules.module_has_content(module_name.lower())
 
         def render_module(self, module_name: str, params: dict[str, str], body: str) -> str:
-            params_for_module = {key.lower(): value for (key, value) in params.items()}
+            params_for_module = {key.lower(): value for (
+                key, value) in params.items()}
             try:
                 return modules.render_module(module_name, self.context, params_for_module, content=body)
             except modules.ModuleError as e:
@@ -41,7 +42,8 @@ def callbacks_with_context(context):
         def render_user(self, user: str, avatar: bool) -> str:
             try:
                 if user.lower().startswith('wd:'):
-                    user = User.objects.get(type=User.UserType.Wikidot, wikidot_username=user[3:])
+                    user = User.objects.get(
+                        type=User.UserType.Wikidot, wikidot_username=user[3:])
                 else:
                     user = User.objects.get(username=user)
                 return render_user_to_html(user, avatar=avatar)
@@ -84,7 +86,8 @@ def callbacks_with_context(context):
         def fetch_includes(self, include_refs: list[ftml.IncludeRef]) -> list[ftml.FetchedPage]:
             from web.controllers import articles
 
-            refs_as_dumb = [self._page_name_to_dumb(x.full_name) for x in include_refs]
+            refs_as_dumb = [self._page_name_to_dumb(
+                x.full_name) for x in include_refs]
             included = ArticleVersion.objects\
                 .select_related('article')\
                 .annotate(full_name=Lower(Concat('article__category', Value(':'), 'article__name', output_field=TextField())))\
@@ -101,13 +104,17 @@ def callbacks_with_context(context):
                 include_name = articles.normalize_article_name(ref_dumb)
                 if include_name in threadvars.get('include_tree', []):
                     print(repr(threadvars.get('include_tree', [])))
-                    threadvars.put('include_err', threadvars.get('include_err', []) + [include_name])
-                    result.append(ftml.FetchedPage(full_name=ref.full_name, content=None))
+                    threadvars.put('include_err', threadvars.get(
+                        'include_err', []) + [include_name])
+                    result.append(ftml.FetchedPage(
+                        full_name=ref.full_name, content=None))
                 else:
-                    result.append(ftml.FetchedPage(full_name=ref.full_name, content=included_map.get(ref_dumb, None)))
+                    result.append(ftml.FetchedPage(
+                        full_name=ref.full_name, content=included_map.get(ref_dumb, None)))
                     if include_name not in new_includes:
                         new_includes.append(include_name)
-            threadvars.put('include_tree', threadvars.get('include_tree', []) + new_includes)
+            threadvars.put('include_tree', threadvars.get(
+                'include_tree', []) + new_includes)
             return result
 
         def fetch_internal_links(self, page_refs: list[str]) -> list[ftml.PartialPageInfo]:
@@ -122,7 +129,8 @@ def callbacks_with_context(context):
             for ref in page_refs:
                 ref_dumb = self._page_name_to_dumb(ref)
                 if ref_dumb in page_map:
-                    result.append(ftml.PartialPageInfo(full_name=ref, exists=True, title=page_map[ref_dumb].title))
+                    result.append(ftml.PartialPageInfo(
+                        full_name=ref, exists=True, title=page_map[ref_dumb].title))
             return result
 
         def evaluate_expression(self, expr: str) -> any:
@@ -159,7 +167,8 @@ def single_pass_render(source, context=None, mode='article') -> str:
     with threadvars.context():
         threadvars.put('include_tree', [])
         threadvars.put('include_err', [])
-        html = ftml.render_html(source, callbacks_with_context(context), page_info_from_context(context), mode)
+        html = ftml.render_html(source, callbacks_with_context(
+            context), page_info_from_context(context), mode)
         return SafeString(html.body)
 
 
@@ -169,10 +178,12 @@ def single_pass_render_with_excerpt(source, context=None, mode='article') -> [st
     with threadvars.context():
         threadvars.put('include_tree', [])
         threadvars.put('include_err', [])
-        html = ftml.render_html(source, callbacks_with_context(context), page_info_from_context(context), mode)
+        html = ftml.render_html(source, callbacks_with_context(
+            context), page_info_from_context(context), mode)
         threadvars.put('include_tree', [])
         threadvars.put('include_err', [])
-        text = ftml.render_text(source, callbacks_with_context(context), page_info_from_context(context), mode).body
+        text = ftml.render_text(source, callbacks_with_context(
+            context), page_info_from_context(context), mode).body
         text = '\n'.join([x.strip() for x in text.split('\n')])
         text = re.sub(r'\n+', '\n', text)
         if len(text) > 384:
@@ -183,5 +194,6 @@ def single_pass_render_with_excerpt(source, context=None, mode='article') -> [st
 def single_pass_fetch_backlinks(source, context=None, mode='article') -> tuple[list[str], list[str]]:
     from ftml import ftml
 
-    text = ftml.collect_backlinks(source, callbacks_with_context(context), page_info_from_context(context), mode)
+    text = ftml.collect_backlinks(source, callbacks_with_context(
+        context), page_info_from_context(context), mode)
     return text.included_pages, text.linked_pages

@@ -12,18 +12,22 @@ class Site(models.Model):
         verbose_name_plural = "Сайты"
 
         constraints = [
-            models.UniqueConstraint(fields=['domain'], name='%(app_label)s_%(class)s_domain_unique'),
-            models.UniqueConstraint(fields=['slug'], name='%(app_label)s_%(class)s_slug_unique'),
+            models.UniqueConstraint(
+                fields=['domain'], name='%(app_label)s_%(class)s_domain_unique'),
+            models.UniqueConstraint(
+                fields=['slug'], name='%(app_label)s_%(class)s_slug_unique'),
         ]
 
     slug = models.TextField(verbose_name='Сокращение', null=False)
 
     title = models.TextField(verbose_name='Заголовок', null=False)
     headline = models.TextField(verbose_name='Подзаголовок', null=False)
-    icon = models.ImageField(null=True, blank=True, upload_to='-/sites', verbose_name="Иконка")
+    icon = models.ImageField(null=True, blank=True,
+                             upload_to='-/sites', verbose_name="Иконка")
 
     domain = models.TextField(verbose_name='Домен для статей', null=False)
-    media_domain = models.TextField(verbose_name='Домен для файлов', null=False)
+    media_domain = models.TextField(
+        verbose_name='Домен для файлов', null=False)
 
     def get_settings(self):
         return Settings.objects.filter(site=self).first() or Settings.get_default_settings()
@@ -45,8 +49,10 @@ class _SiteLimitedMetaclass(models.base.ModelBase):
 
         # add site field
         if 'site' in attrs:
-            raise KeyError('Field \'site\' already exists in \'%s\'. This is not compatible with SiteLimitedModel.' % name)
-        attrs['site'] = models.ForeignKey(to=Site, on_delete=models.CASCADE, null=False, verbose_name="Сайт")
+            raise KeyError(
+                'Field \'site\' already exists in \'%s\'. This is not compatible with SiteLimitedModel.' % name)
+        attrs['site'] = models.ForeignKey(
+            to=Site, on_delete=models.CASCADE, null=False, verbose_name="Сайт")
 
         # modify unique constraints and add site field
         meta = attrs.get('Meta')

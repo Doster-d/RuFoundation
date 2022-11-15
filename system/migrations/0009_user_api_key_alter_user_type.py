@@ -13,11 +13,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='api_key',
-            field=models.CharField(blank=True, max_length=67, null=True, unique=True, verbose_name='Апи-ключ (для ботов)'),
+            field=models.CharField(blank=True, max_length=67, null=True,
+                                   unique=True, verbose_name='Апи-ключ (для ботов)'),
         ),
         migrations.AlterField(
             model_name='user',
             name='type',
-            field=models.TextField(choices=[('normal', 'Normal'), ('wikidot', 'Wikidot'), ('system', 'System'), ('bot', 'Bot')], default='normal', verbose_name='Тип'),
+            field=models.TextField(choices=[('normal', 'Normal'), ('wikidot', 'Wikidot'), (
+                'system', 'System'), ('bot', 'Bot')], default='normal', verbose_name='Тип'),
         ),
     ]

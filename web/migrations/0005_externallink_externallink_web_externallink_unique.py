@@ -15,11 +15,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ExternalLink',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('link_from', django.contrib.postgres.fields.citext.CITextField(verbose_name='Ссылающаяся статья')),
-                ('link_to', django.contrib.postgres.fields.citext.CITextField(verbose_name='Целевая статья')),
-                ('link_type', models.TextField(choices=[('include', 'Include'), ('link', 'Link')], verbose_name='Тип ссылки')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('link_from', django.contrib.postgres.fields.citext.CITextField(
+                    verbose_name='Ссылающаяся статья')),
+                ('link_to', django.contrib.postgres.fields.citext.CITextField(
+                    verbose_name='Целевая статья')),
+                ('link_type', models.TextField(choices=[
+                 ('include', 'Include'), ('link', 'Link')], verbose_name='Тип ссылки')),
+                ('site', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
             ],
             options={
                 'verbose_name': 'Связь',
@@ -28,6 +33,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='externallink',
-            constraint=models.UniqueConstraint(fields=('site', 'link_from', 'link_to', 'link_type'), name='web_externallink_unique'),
+            constraint=models.UniqueConstraint(fields=(
+                'site', 'link_from', 'link_to', 'link_type'), name='web_externallink_unique'),
         ),
     ]

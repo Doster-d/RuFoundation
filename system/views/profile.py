@@ -27,7 +27,8 @@ class ProfileView(DetailView):
             ctx['subtitle'] = 'Администратор сайта'
         elif user.is_staff:
             ctx['subtitle'] = 'Модератор сайта'
-        ctx['bio_rendered'] = single_pass_render(user.bio, RenderContext(article=None, source_article=None, path_params=None, user=self.request.user), 'inline')
+        ctx['bio_rendered'] = single_pass_render(user.bio, RenderContext(
+            article=None, source_article=None, path_params=None, user=self.request.user), 'inline')
         return ctx
 
     def get(self, *args, **kwargs):

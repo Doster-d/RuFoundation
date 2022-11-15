@@ -25,15 +25,19 @@ def rename_media_folders(apps, schema_editor):
     db = schema_editor.connection.alias
     for article in Article.objects.using(db).all():
         # find renames, if any.
-        renames = ArticleLogEntry.objects.using(db).filter(article=article, type='name').order_by('-rev_number')
+        renames = ArticleLogEntry.objects.using(db).filter(
+            article=article, type='name').order_by('-rev_number')
         real_current_dir_name = get_full_name(article)
         for rename in renames:
             if real_current_dir_name == rename.meta['name']:
                 real_current_dir_name = rename.meta['prev_name']
             else:
-                raise ValueError('Integrity error: expected rename to be %s, found %s instead' % (real_current_dir_name, rename.meta['name']))
-        path_rename_from = Path(settings.MEDIA_ROOT) / article.site.slug / partial_quote(real_current_dir_name)
-        path_rename_to = Path(settings.MEDIA_ROOT) / article.site.slug / article.media_name
+                raise ValueError('Integrity error: expected rename to be %s, found %s instead' % (
+                    real_current_dir_name, rename.meta['name']))
+        path_rename_from = Path(
+            settings.MEDIA_ROOT) / article.site.slug / partial_quote(real_current_dir_name)
+        path_rename_to = Path(settings.MEDIA_ROOT) / \
+            article.site.slug / article.media_name
         if os.path.exists(path_rename_from):
             os.rename(path_rename_from, path_rename_to)
 
@@ -49,6 +53,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='article',
             name='media_name',
-            field=models.TextField(default=uuid4, unique=True, verbose_name='Название папки с файлами в ФС-хранилище'),
+            field=models.TextField(
+                default=uuid4, unique=True, verbose_name='Название папки с файлами в ФС-хранилище'),
         ),
     ]

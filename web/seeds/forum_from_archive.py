@@ -59,7 +59,8 @@ def run(base_path):
 
     logging.info('Loading existing pages...')
     articles = Article.objects.all()
-    renames = ArticleLogEntry.objects.filter(type=ArticleLogEntry.LogEntryType.Name).order_by('-created_at')
+    renames = ArticleLogEntry.objects.filter(
+        type=ArticleLogEntry.LogEntryType.Name).order_by('-created_at')
     page_name_map = {}
     for article in articles:
         page_renames = [x for x in renames if x.article_id == article.id]
@@ -105,12 +106,14 @@ def run(base_path):
         cursor.execute('TRUNCATE TABLE web_forumsection CASCADE')
 
     # generate section for imported content
-    section = ForumSection(name='Imported', description='Imported from archive')
+    section = ForumSection(
+        name='Imported', description='Imported from archive')
     section.save()
 
     # generate categories
     for _, category in categories.items():
-        c = ForumCategory(id=category['id'], name=category['title'], description=category['description'], section=section, is_for_comments=category['isForComments'])
+        c = ForumCategory(id=category['id'], name=category['title'], description=category['description'],
+                          section=section, is_for_comments=category['isForComments'])
         c.save()
         category['local'] = c
 
@@ -124,7 +127,8 @@ def run(base_path):
         nonlocal orphan_category
 
         for thread in work:
-            user = get_or_create_user(thread['startedUser'], g_users, g_users_by_username)
+            user = get_or_create_user(
+                thread['startedUser'], g_users, g_users_by_username)
 
             category = categories[thread['categoryId']]['local']
             article = None
@@ -135,29 +139,37 @@ def run(base_path):
                 category = None
                 article = page_name_map.get(comment_thread_map[thread['id']])
                 if article is None:
-                    logging.warning('Warn: comment thread %d for nonexistent article %s', thread['id'], comment_thread_map[thread['id']])
+                    logging.warning('Warn: comment thread %d for nonexistent article %s',
+                                    thread['id'], comment_thread_map[thread['id']])
                     is_orphan = True
 
             if category and category.is_for_comments:
-                logging.warning('Warn: attempt to put thread %d in a comment category, but it\'s not a comment thread', thread['id'])
+                logging.warning(
+                    'Warn: attempt to put thread %d in a comment category, but it\'s not a comment thread', thread['id'])
                 is_orphan = True
 
             if is_orphan:
                 with orphan_category_lock:
                     if not orphan_category:
-                        orphan_category = ForumCategory(name='Orphan threads', description='Comment threads that could not be reliably assigned to an article', section=section)
+                        orphan_category = ForumCategory(
+                            name='Orphan threads', description='Comment threads that could not be reliably assigned to an article', section=section)
                         orphan_category.save()
                 category = orphan_category
                 article = None
 
-            th = ForumThread(id=thread['id'], category=category, article=article, name=thread['title'], description=thread['description'], author=user, is_pinned=thread['sticky'])
+            th = ForumThread(id=thread['id'], category=category, article=article, name=thread['title'],
+                             description=thread['description'], author=user, is_pinned=thread['sticky'])
             th.save()
-            created_at = datetime.fromtimestamp(thread['started'], tz=timezone.utc)
+            created_at = datetime.fromtimestamp(
+                thread['started'], tz=timezone.utc)
             # updated_at is the highest post creation timestamp
-            updated_at = datetime.fromtimestamp(post_highest_timestamp(thread['posts']) or thread['started'], tz=timezone.utc)
-            ForumThread.objects.filter(id=th.id).update(created_at=created_at, updated_at=updated_at)
+            updated_at = datetime.fromtimestamp(post_highest_timestamp(
+                thread['posts']) or thread['started'], tz=timezone.utc)
+            ForumThread.objects.filter(id=th.id).update(
+                created_at=created_at, updated_at=updated_at)
 
-            post_data_7z = '%s/forum/%d/%d.7z' % (base_path, thread['categoryId'], thread['id'])
+            post_data_7z = '%s/forum/%d/%d.7z' % (
+                base_path, thread['categoryId'], thread['id'])
 
             if thread['posts']:
                 with py7zr.SevenZipFile(post_data_7z) as z:
@@ -171,38 +183,50 @@ def run(base_path):
                 nonlocal t
 
                 # create post
-                user = get_or_create_user(post['poster'], g_users, g_users_by_username)
-                created_at = datetime.fromtimestamp(post['stamp'], tz=timezone.utc)
-                updated_at = datetime.fromtimestamp(post.get('lastEdit') or post['stamp'], tz=timezone.utc)
-                p = ForumPost(id=post['id'], thread=th, name=post.get('title') or '', author=user, reply_to=post.get('replyTo', None))
+                user = get_or_create_user(
+                    post['poster'], g_users, g_users_by_username)
+                created_at = datetime.fromtimestamp(
+                    post['stamp'], tz=timezone.utc)
+                updated_at = datetime.fromtimestamp(
+                    post.get('lastEdit') or post['stamp'], tz=timezone.utc)
+                p = ForumPost(id=post['id'], thread=th, name=post.get(
+                    'title') or '', author=user, reply_to=post.get('replyTo', None))
                 p.save()
-                ForumPost.objects.filter(id=p.id).update(created_at=created_at, updated_at=updated_at)
+                ForumPost.objects.filter(id=p.id).update(
+                    created_at=created_at, updated_at=updated_at)
 
                 threadvars.put('threadid', th.id)
 
                 if post.get('revisions', []):
                     for rev in post['revisions']:
-                        rev_user = get_or_create_user(rev['author'], g_users, g_users_by_username)
-                        rev_created_at = datetime.fromtimestamp(rev['stamp'], tz=timezone.utc)
+                        rev_user = get_or_create_user(
+                            rev['author'], g_users, g_users_by_username)
+                        rev_created_at = datetime.fromtimestamp(
+                            rev['stamp'], tz=timezone.utc)
                         source_in_file = '%d/%d.html' % (post['id'], rev['id'])
-                        source = html_to_source(post_contents[source_in_file].read().decode('utf-8'))
+                        source = html_to_source(
+                            post_contents[source_in_file].read().decode('utf-8'))
 
                         for k, v in settings.ARTICLE_IMPORT_REPLACE_CONFIG.items():
                             source = source.replace(k, v)
 
-                        r = ForumPostVersion(post=p, author=rev_user, source=source)
+                        r = ForumPostVersion(
+                            post=p, author=rev_user, source=source)
                         r.save()
-                        ForumPostVersion.objects.filter(id=r.id).update(created_at=rev_created_at)
+                        ForumPostVersion.objects.filter(
+                            id=r.id).update(created_at=rev_created_at)
                 else:
                     source_in_file = '%d/latest.html' % post['id']
-                    source = html_to_source(post_contents[source_in_file].read().decode('utf-8'))
+                    source = html_to_source(
+                        post_contents[source_in_file].read().decode('utf-8'))
 
                     for k, v in settings.ARTICLE_IMPORT_REPLACE_CONFIG.items():
                         source = source.replace(k, v)
 
                     r = ForumPostVersion(post=p, author=user, source=source)
                     r.save()
-                    ForumPostVersion.objects.filter(id=r.id).update(created_at=created_at)
+                    ForumPostVersion.objects.filter(
+                        id=r.id).update(created_at=created_at)
 
                 with t_lock:
                     done_posts += 1
@@ -222,11 +246,13 @@ def run(base_path):
             with t_lock:
                 done_threads += 1
                 if time.time() - t > 1:
-                    logging.info('Added: %d/%d (posts: %d/%d)' % (done_threads, total_threads, done_posts, total_posts))
+                    logging.info('Added: %d/%d (posts: %d/%d)' %
+                                 (done_threads, total_threads, done_posts, total_posts))
                     t = time.time()
 
     run_in_threads(convert_threads, threads)
-    logging.info('Done; Added: %d/%d (posts: %d/%d)' % (done_threads, total_threads, done_posts, total_posts))
+    logging.info('Done; Added: %d/%d (posts: %d/%d)' %
+                 (done_threads, total_threads, done_posts, total_posts))
 
 
 ####################################################################################################
@@ -292,7 +318,8 @@ def element_to_source(el):
             while root.parent:
                 root = root.parent
             footnoteblock = root.find('div', class_='footnotes-footer')
-            footnote_nodes = footnoteblock.find_all('div', class_='footnote-footer')
+            footnote_nodes = footnoteblock.find_all(
+                'div', class_='footnote-footer')
             footnotes = dict()
             for node in footnote_nodes:
                 if '_p_text' in node.attrs and '_p_number' in node.attrs:
@@ -330,7 +357,8 @@ def element_to_source(el):
         attrs = attrs_to_source(el)
         return '[[span%s]]%s[[/span]]' % (attrs, contents)
     elif el.name == 'blockquote':
-        contents = '> ' + '\n> '.join(elements_to_source(el).strip().split('\n')) + '\n'
+        contents = '> ' + \
+            '\n> '.join(elements_to_source(el).strip().split('\n')) + '\n'
         return contents
     elif el.name == 'div':
         if element_has_allowed_class(el, ['rimg', 'limg', 'cimg', 'blockquote', 'сimg', 'scpnet-progress-bar', 'scpnet-progress-bar__tick', 'block-error', 'collapsible-block-unfolded-link']):
@@ -338,10 +366,14 @@ def element_to_source(el):
         elif 'collapsible-block' in el['class']:
             # detect collapsibles
             # hidelocation is not preserved
-            show = el.find('div', class_='collapsible-block-folded').find('a', class_='collapsible-block-link').text.replace('\n', ' ').strip()
-            hide = el.find('div', class_='collapsible-block-unfolded').find('div', class_='collapsible-block-unfolded-link').find('a', class_='collapsible-block-link').text.replace('\n', ' ').strip()
-            contents = elements_to_source(el.find('div', class_='collapsible-block-content'))
-            src = '[[collapsible show="%s" hide="%s"]]\n' % (attr_value_to_source(show), attr_value_to_source(hide))
+            show = el.find('div', class_='collapsible-block-folded').find('a',
+                                                                          class_='collapsible-block-link').text.replace('\n', ' ').strip()
+            hide = el.find('div', class_='collapsible-block-unfolded').find('div', class_='collapsible-block-unfolded-link').find(
+                'a', class_='collapsible-block-link').text.replace('\n', ' ').strip()
+            contents = elements_to_source(
+                el.find('div', class_='collapsible-block-content'))
+            src = '[[collapsible show="%s" hide="%s"]]\n' % (
+                attr_value_to_source(show), attr_value_to_source(hide))
             src += contents
             src += '[[/collapsible]]\n'
             return src
@@ -357,7 +389,8 @@ def element_to_source(el):
             for tab in tabs:
                 if tab.name != 'div':
                     continue
-                src += '[[tab title="%s"]]\n' % (attr_value_to_source(tabnames[num]))
+                src += '[[tab title="%s"]]\n' % (
+                    attr_value_to_source(tabnames[num]))
                 src += elements_to_source(tab)
                 src += '[[/tab]]\n'
                 num += 1
@@ -374,17 +407,20 @@ def element_to_source(el):
                 return '[[code]]\n%s\n[[/code]]\n' % code
             return '[[div%s]]\n%s[[/div]]\n' % (attrs_to_source(el), elements_to_source(el))
         elif 'footnotes-footer' in el['class']:
-            title = el.find('div', class_='title').text.replace('\n', ' ').strip()
+            title = el.find('div', class_='title').text.replace(
+                '\n', ' ').strip()
             return '[[footnoteblock title="%s"]]\n' % attr_value_to_source(title)
         elif 'bibitems' in el['class']:
-            title = el.find('div', class_='title').text.replace('\n', ' ').strip()
+            title = el.find('div', class_='title').text.replace(
+                '\n', ' ').strip()
             src = '[[bibliography title="%s"]]\n' % attr_value_to_source(title)
             iv = 0
             for item in el.find_all('div', class_='bibitem'):
                 iv += 1
                 children = [x for x in item.children]
                 children[0].replace_with(children[0][2:])
-                src += ': cite%d : %s\n' % (iv, elements_to_source(item).strip())
+                src += ': cite%d : %s\n' % (iv,
+                                            elements_to_source(item).strip())
             src += '[[/bibliography]]\n'
             return src
         elif 'image-container' in el['class']:
@@ -444,7 +480,8 @@ def element_to_source(el):
         for node in el:
             if node.name == 'dt':
                 dd = node.find_next('dd')
-                src += ': %s : %s\n' % (node.text.replace('\n', ' '), dd.text.replace('\n', ' '))
+                src += ': %s : %s\n' % (node.text.replace('\n', ' '),
+                                        dd.text.replace('\n', ' '))
         return src
     else:
         print('thread = %d' % threadvars.get('threadid'))

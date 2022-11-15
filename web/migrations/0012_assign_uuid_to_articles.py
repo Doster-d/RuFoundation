@@ -8,7 +8,8 @@ def assign_uuids(apps, schema_editor):
     Article = apps.get_model("web", "Article")
     db = schema_editor.connection.alias
     for article in Article.objects.using(db).all():
-        Article.objects.using(db).filter(id=article.id).update(media_name=uuid4())
+        Article.objects.using(db).filter(
+            id=article.id).update(media_name=uuid4())
 
 
 class Migration(migrations.Migration):
@@ -22,6 +23,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='article',
             name='media_name',
-            field=models.TextField(null=False, unique=True, verbose_name='Название папки с файлами в ФС-хранилище'),
+            field=models.TextField(
+                null=False, unique=True, verbose_name='Название папки с файлами в ФС-хранилище'),
         ),
     ]

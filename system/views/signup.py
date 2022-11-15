@@ -82,12 +82,15 @@ class InviteView(FormView):
             }
             content = render_to_string(self.email_template_name, c)
             try:
-                send_mail(subject, content, None, [user.email], fail_silently=False)
-                messages.success(self.request, "Приглашение успешно отправлено")
+                send_mail(subject, content, None, [
+                          user.email], fail_silently=False)
+                messages.success(
+                    self.request, "Приглашение успешно отправлено")
             except BadHeaderError:
                 messages.error(self.request, "Неправильный заголовок")
         else:
-            messages.error(self.request, "Данный email уже привязан к участнику сайта")
+            messages.error(
+                self.request, "Данный email уже привязан к участнику сайта")
 
         return redirect(self.get_success_url())
 
@@ -139,7 +142,7 @@ class ActivateView(FormView):
             self.user.set_password(form.cleaned_data["password"])
             self.user.is_active = True
             self.user.save()
-            login(self.request, self.user, backend="django.contrib.auth.backends.ModelBackend")
+            login(self.request, self.user,
+                  backend="django.contrib.auth.backends.ModelBackend")
             return super(ActivateView, self).form_valid(form)
         return HttpResponseBadRequest("Invalid user token")
-

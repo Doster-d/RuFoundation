@@ -34,7 +34,7 @@ def render_user_to_html(user: User, avatar=True, hover=True):
     if user is None:
         return render_template_from_string(
             '<span class="printuser{{class_add}}"><strong>system</strong></span>',
-             class_add=(' avatarhover' if hover else '')
+            class_add=(' avatarhover' if hover else '')
         )
     if isinstance(user, AnonymousUser):
         return render_template_from_string(

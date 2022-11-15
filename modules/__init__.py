@@ -32,7 +32,8 @@ def get_all_modules():
             else:
                 m = importer.find_module(fullname).load_module(fullname)
         except:
-            logging.error('Failed to load module \'%s\':', modname.lower(), exc_info=True)
+            logging.error('Failed to load module \'%s\':',
+                          modname.lower(), exc_info=True)
             continue
         if not check_function_exists_and_callable(m, 'render') and not check_function_exists_and_callable(m, 'allow_api'):
             continue
@@ -77,7 +78,8 @@ def render_module(name, context, params, content=None):
     try:
         render = m.__dict__.get('render', None)
         if render is None:
-            raise ModuleError('Модуль \'%s\' не поддерживает использование на странице')
+            raise ModuleError(
+                'Модуль \'%s\' не поддерживает использование на странице')
         if module_has_content(m):
             return render(context, params, content)
         else:
@@ -85,7 +87,8 @@ def render_module(name, context, params, content=None):
     except ModuleError as e:
         raise
     except:
-        logging.error('Module failed: %s, Params = %s, Path = %s, Error:', name, params, context.path_params if context else None, exc_info=True)
+        logging.error('Module failed: %s, Params = %s, Path = %s, Error:', name,
+                      params, context.path_params if context else None, exc_info=True)
         raise ModuleError('Ошибка обработки модуля \'%s\'' % name)
 
 
@@ -105,5 +108,6 @@ def handle_api(name, method, context, params):
     except ModuleError:
         raise
     except:
-        logging.error('Module failed: %s, API = %s, Params = %s, Path = %s, Error:', name, method, params, context.path_params if context else None, exc_info=True)
+        logging.error('Module failed: %s, API = %s, Params = %s, Path = %s, Error:',
+                      name, method, params, context.path_params if context else None, exc_info=True)
         raise ModuleError('Ошибка обработки модуля \'%s\'' % name)

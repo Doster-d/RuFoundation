@@ -27,7 +27,8 @@ def delete_external_links(apps, schema_editor):
                 first_log = True
             print('    delete: %s\n    ' % (link.link_from), end='')
             sys.stdout.flush()
-            ExternalLink.objects.using(db).filter(link_from__iexact=link.link_from).delete()
+            ExternalLink.objects.using(db).filter(
+                link_from__iexact=link.link_from).delete()
 
 
 class Migration(migrations.Migration):

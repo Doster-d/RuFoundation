@@ -38,7 +38,8 @@ def api_fetch(context, params):
     else:
         source = version[0].source
 
-    content = single_pass_render(source, RenderContext(None, None, {}, context.user), 'message')
+    content = single_pass_render(source, RenderContext(
+        None, None, {}, context.user), 'message')
 
     return {
         'postId': post.id,
@@ -66,11 +67,13 @@ def api_update(context, params):
     if not permissions.check(context.user, 'edit', post):
         raise ModuleError('Недостаточно прав для редактирования сообщения')
 
-    latest_version = ForumPostVersion.objects.filter(post=post).order_by('-created_at')[:1]
+    latest_version = ForumPostVersion.objects.filter(
+        post=post).order_by('-created_at')[:1]
     prev_source = latest_version[0].source if latest_version else ''
 
     if source != prev_source:
-        new_version = ForumPostVersion(post=post, source=source, author=context.user)
+        new_version = ForumPostVersion(
+            post=post, source=source, author=context.user)
         new_version.save()
         post.updated_at = datetime.now(timezone.utc)
 
@@ -79,7 +82,8 @@ def api_update(context, params):
 
     post.save()
 
-    content = single_pass_render(source, RenderContext(None, None, {}, context.user), 'message')
+    content = single_pass_render(source, RenderContext(
+        None, None, {}, context.user), 'message')
 
     return {
         'postId': post.id,

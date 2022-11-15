@@ -22,7 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-)wy0h9z6x4o3t4@=s_keq0x$illy9yqyo!4g8wk%mo8l+8imun')
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY', 'django-insecure-)wy0h9z6x4o3t4@=s_keq0x$illy9yqyo!4g8wk%mo8l+8imun')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'true') == 'true'
@@ -166,19 +167,22 @@ def parse_size(size):
     match = re.fullmatch(r'(\d+)(.*)', size)
     if not match:
         raise ValueError('Invalid size specification: %s' % size)
-    units = {"B": 1, "KB": 2 ** 10, "MB": 2 ** 20, "GB": 2 ** 30, "TB": 2 ** 40}
+    units = {"B": 1, "KB": 2 ** 10, "MB": 2 **
+             20, "GB": 2 ** 30, "TB": 2 ** 40}
     number = match[1]
     unit = match[2].strip().upper()
     if not unit:
         unit = 'B'
     if unit not in units:
-        raise ValueError('Invalid size specification: %s, allowed units: %s' % (size, ', '.join(units.keys())))
+        raise ValueError('Invalid size specification: %s, allowed units: %s' % (
+            size, ', '.join(units.keys())))
     return int(float(number)*units[unit])
 
 
 ARTICLE_SOURCE_LIMIT = int(os.environ.get('ARTICLE_SOURCE_LIMIT', '200000'))
 
-ABSOLUTE_MEDIA_UPLOAD_LIMIT = parse_size(os.environ.get('ABSOLUTE_MEDIA_UPLOAD_LIMIT', '0'))
+ABSOLUTE_MEDIA_UPLOAD_LIMIT = parse_size(
+    os.environ.get('ABSOLUTE_MEDIA_UPLOAD_LIMIT', '0'))
 MEDIA_UPLOAD_LIMIT = parse_size(os.environ.get('MEDIA_UPLOAD_LIMIT', '0'))
 
 
@@ -235,7 +239,8 @@ elif mail_backend == 'smtp':
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD', '')
     EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'false') == 'true'
     if 'EMAIL_DEFAULT_FROM' not in os.environ:
-        raise KeyError('EMAIL_DEFAULT_FROM environment variable is required for SMTP')
+        raise KeyError(
+            'EMAIL_DEFAULT_FROM environment variable is required for SMTP')
     DEFAULT_FROM_EMAIL = os.environ['EMAIL_DEFAULT_FROM']
 else:
     raise ValueError('Unknown email engine "%s"' % mail_backend)

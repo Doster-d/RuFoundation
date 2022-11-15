@@ -47,19 +47,22 @@ def api_submit(context, params):
         reply_to = ForumPost.objects.filter(id=reply_to_id)
         reply_to = reply_to[0] if reply_to else None
         if reply_to.thread != thread:
-            raise ModuleError('Невозможно создать ответ на сообщение в другой теме')
+            raise ModuleError(
+                'Невозможно создать ответ на сообщение в другой теме')
     except:
         reply_to = None
 
     if not permissions.check(context.user, 'create', ForumPost(thread=thread)):
         raise ModuleError('Недостаточно прав для создания сообщения')
 
-    post = ForumPost(thread=thread, author=context.user, name=title, reply_to=reply_to)
+    post = ForumPost(thread=thread, author=context.user,
+                     name=title, reply_to=reply_to)
     post.save()
     post.updated_at = post.created_at
     post.save()
 
-    first_post_content = ForumPostVersion(post=post, source=source, author=context.user)
+    first_post_content = ForumPostVersion(
+        post=post, source=source, author=context.user)
     first_post_content.save()
 
     thread.updated_at = datetime.now(timezone.utc)

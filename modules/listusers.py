@@ -27,4 +27,3 @@ def render(context, params, content=None):
     template = apply_template((content or '').strip(), tpl_vars)
 
     return renderer.single_pass_render(template, context)
-

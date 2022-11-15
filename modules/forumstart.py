@@ -24,7 +24,8 @@ def render(context: RenderContext, params):
     for section in sections:
         if not permissions.check(context.user, 'view', section):
             continue
-        item = {'name': section.name, 'description': section.description, 'categories': []}
+        item = {'name': section.name,
+                'description': section.description, 'categories': []}
         for category in categories:
             if category.section_id != section.id:
                 continue
@@ -36,17 +37,24 @@ def render(context: RenderContext, params):
                 'url': '/forum/c-%d/%s' % (category.id, articles.normalize_article_name(category.name))
             }
             if category.is_for_comments:
-                citem['threads'] = ForumThread.objects.filter(article_id__isnull=False).count()
-                citem['posts'] = ForumPost.objects.filter(thread__article_id__isnull=False).count()
-                last_post = ForumPost.objects.filter(thread__article_id__isnull=False).order_by('-created_at')[:1]
+                citem['threads'] = ForumThread.objects.filter(
+                    article_id__isnull=False).count()
+                citem['posts'] = ForumPost.objects.filter(
+                    thread__article_id__isnull=False).count()
+                last_post = ForumPost.objects.filter(
+                    thread__article_id__isnull=False).order_by('-created_at')[:1]
             else:
-                citem['threads'] = ForumThread.objects.filter(category=category).count()
-                citem['posts'] = ForumPost.objects.filter(thread__category=category).count()
-                last_post = ForumPost.objects.filter(thread__category=category).order_by('-created_at')[:1]
+                citem['threads'] = ForumThread.objects.filter(
+                    category=category).count()
+                citem['posts'] = ForumPost.objects.filter(
+                    thread__category=category).count()
+                last_post = ForumPost.objects.filter(
+                    thread__category=category).order_by('-created_at')[:1]
             if last_post:
                 last_post = last_post[0]
                 citem['last_post_date'] = render_date(last_post.created_at)
-                citem['last_post_url'] = '/forum/t-%d/%s#post-%d' % (last_post.thread.id, articles.normalize_article_name(last_post.thread.name if last_post.thread.category_id else last_post.thread.article.display_name), last_post.id)
+                citem['last_post_url'] = '/forum/t-%d/%s#post-%d' % (last_post.thread.id, articles.normalize_article_name(
+                    last_post.thread.name if last_post.thread.category_id else last_post.thread.article.display_name), last_post.id)
                 citem['last_post_user'] = render_user_to_html(last_post.author)
             else:
                 citem['last_post_date'] = None

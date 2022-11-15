@@ -10,5 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL('UPDATE web_article a SET author_id=v.user_id FROM web_articlelogentry v WHERE v.article_id=a.id AND v.rev_number=0')
+        migrations.RunSQL(
+            'UPDATE web_article a SET author_id=v.user_id FROM web_articlelogentry v WHERE v.article_id=a.id AND v.rev_number=0')
     ]

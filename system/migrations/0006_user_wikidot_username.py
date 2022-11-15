@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='wikidot_username',
-            field=django.contrib.postgres.fields.citext.CITextField(null=True, unique=True, verbose_name='Имя пользователя на Wikidot'),
+            field=django.contrib.postgres.fields.citext.CITextField(
+                null=True, unique=True, verbose_name='Имя пользователя на Wikidot'),
         ),
     ]

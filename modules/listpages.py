@@ -91,8 +91,10 @@ def page_to_listpages_vars(page: Article, template, index, total):
         page_vars['parent_category'] = page.parent.category
         page_vars['parent_fullname'] = articles.get_full_name(page.parent)
         page_vars['parent_title'] = page.parent.title
-        page_vars['parent_title_linked'] = '[[[%s|%s]]]' % (articles.get_full_name(page.parent), page.parent.title)
-    template = apply_template(template, lambda name: render_var(name, page_vars, page))
+        page_vars['parent_title_linked'] = '[[[%s|%s]]]' % (
+            articles.get_full_name(page.parent), page.parent.title)
+    template = apply_template(
+        template, lambda name: render_var(name, page_vars, page))
     return template
 
 
@@ -160,7 +162,8 @@ def query_pages(article, params, viewer=None, path_params=None, allow_pagination
                 q = q.filter(tags__name__in=tags)
             elif f_tags == '==':
                 tags = articles.get_tags(article)
-                q = q.filter(tags__name__in=tags).annotate(num_tags=Count('tags')).filter(num_tags=len(tags))
+                q = q.filter(tags__name__in=tags).annotate(
+                    num_tags=Count('tags')).filter(num_tags=len(tags))
             else:
                 f_tags = [x.strip() for x in f_tags.split(' ') if x.strip()]
                 required_tags = []
@@ -221,9 +224,11 @@ def query_pages(article, params, viewer=None, path_params=None, allow_pagination
             else:
                 f_created_by = f_created_by.strip()
                 if f_created_by.startswith('wd:'):
-                    user = User.objects.filter(type=User.UserType.Wikidot, wikidot_username__iexact=f_created_by[3:])
+                    user = User.objects.filter(
+                        type=User.UserType.Wikidot, wikidot_username__iexact=f_created_by[3:])
                 else:
-                    user = User.objects.filter(username__iexact=f_created_by.strip())
+                    user = User.objects.filter(
+                        username__iexact=f_created_by.strip())
                 user = user[0] if user else None
             if not user or not user.is_authenticated:
                 q = q.filter(id=-1)  # invalid
@@ -233,25 +238,32 @@ def query_pages(article, params, viewer=None, path_params=None, allow_pagination
         if f_created_at:
             if f_created_at.strip() == '=':
                 if article:
-                    day_start = article.created_at.replace(hour=0, minute=0, second=0, microsecond=0)
-                    day_end = day_start.replace(hour=23, minute=59, second=59, microsecond=0)
-                    q = q.filter(created_at__gte=day_start, created_at__lte=day_end)
+                    day_start = article.created_at.replace(
+                        hour=0, minute=0, second=0, microsecond=0)
+                    day_end = day_start.replace(
+                        hour=23, minute=59, second=59, microsecond=0)
+                    q = q.filter(created_at__gte=day_start,
+                                 created_at__lte=day_end)
                 else:
                     q = q.filter(id=-1)  # invalid
             else:
-                op, f_created_at = split_arg_operator(f_created_at, ['>', '<', '=', '>=', '<=', '<>'], '=')
+                op, f_created_at = split_arg_operator(
+                    f_created_at, ['>', '<', '=', '>=', '<=', '<>'], '=')
                 f_created_at = f_created_at.strip()
                 try:
                     dd = f_created_at.split('-')
                     year = int(dd[0])
-                    first_date = datetime(year=year, month=1, day=1, tzinfo=timezone.utc)
-                    last_date = datetime(year=year, month=12, day=31, tzinfo=timezone.utc)
+                    first_date = datetime(
+                        year=year, month=1, day=1, tzinfo=timezone.utc)
+                    last_date = datetime(
+                        year=year, month=12, day=31, tzinfo=timezone.utc)
                     if len(dd) >= 2:
                         month = int(dd[1])
                         month = max(1, min(12, month))
                         first_date = first_date.replace(month=month)
                         max_days = calendar.monthrange(year, month)[1]
-                        last_date = last_date.replace(month=month, day=max_days)
+                        last_date = last_date.replace(
+                            month=month, day=max_days)
                     else:
                         month = None  # this is just to silence pycharm
                     if len(dd) >= 3:
@@ -261,9 +273,11 @@ def query_pages(article, params, viewer=None, path_params=None, allow_pagination
                         first_date = first_date.replace(day=day)
                         last_date = last_date.replace(day=day)
                     if op == '=':
-                        q = q.filter(created_at__gte=first_date, created_at__lte=last_date)
+                        q = q.filter(created_at__gte=first_date,
+                                     created_at__lte=last_date)
                     elif op == '<>':
-                        q = q.filter(Q(created_at__lt=first_date) | Q(created_at__gt=last_date))
+                        q = q.filter(Q(created_at__lt=first_date)
+                                     | Q(created_at__gt=last_date))
                     elif op == '<':
                         q = q.filter(created_at__lt=first_date)
                     elif op == '>':
@@ -298,7 +312,8 @@ def query_pages(article, params, viewer=None, path_params=None, allow_pagination
                     current_rating, votes, mode = articles.get_rating(article)
                     q = q.filter(rating=current_rating)
             else:
-                op, f_rating = split_arg_operator(f_rating, ['>=', '<=', '<>', '>', '<', '='], '=')
+                op, f_rating = split_arg_operator(
+                    f_rating, ['>=', '<=', '<>', '>', '<', '='], '=')
                 f_rating = f_rating.strip()
                 try:
                     try:
@@ -337,7 +352,8 @@ def query_pages(article, params, viewer=None, path_params=None, allow_pagination
         if f_sort[0] not in allowed_sort_columns:
             f_sort = ['created_at', 'desc']
         direction = 'desc' if f_sort[1:] == ['desc'] else 'asc'
-        q = q.order_by(getattr(allowed_sort_columns[f_sort[0]], direction)())  # asc/desc is a function call on DB val
+        # asc/desc is a function call on DB val
+        q = q.order_by(getattr(allowed_sort_columns[f_sort[0]], direction)())
         q = q.distinct()
         # end sorting
         try:
@@ -387,7 +403,8 @@ def render_pagination(base_path, pagination_page, pagination_total_pages):
         right_to = pagination_total_pages
         right_from = max(left_to + 1, right_to - 1)
         if pagination_page > (right_to - (around_pages * 2 + 1)):
-            right_from = max(left_to + 1, pagination_total_pages - (around_pages + 1))
+            right_from = max(
+                left_to + 1, pagination_total_pages - (around_pages + 1))
         center_from = max(left_to + 1, pagination_page - around_pages)
         center_to = min(right_from - 1, pagination_page + around_pages)
         return render_template_from_string(
@@ -463,7 +480,8 @@ def render(context: RenderContext, params, content=None):
         separate = params.get('separate', 'yes') == 'yes'
         wrapper = params.get('wrapper', 'yes') == 'yes'
 
-        pages, page_index, pagination_page, pagination_total_pages, total_pages = query_pages(context.article, params, context.user, context.path_params)
+        pages, page_index, pagination_page, pagination_total_pages, total_pages = query_pages(
+            context.article, params, context.user, context.path_params)
 
         pages = list(pages)
         if params.get('reverse', 'no') == 'yes':
@@ -474,11 +492,14 @@ def render(context: RenderContext, params, content=None):
 
         if separate:
             if prepend:
-                output += renderer.single_pass_render(prepend+'\n', common_context)
+                output += renderer.single_pass_render(
+                    prepend+'\n', common_context)
             for page in pages:
                 page_index += 1
-                page_content = page_to_listpages_vars(page, content, page_index, total_pages)
-                cc = common_context.clone_with(article=page, source_article=page)
+                page_content = page_to_listpages_vars(
+                    page, content, page_index, total_pages)
+                cc = common_context.clone_with(
+                    article=page, source_article=page)
                 output += renderer.single_pass_render(page_content+'\n', cc)
                 common_context.merge(cc)
             if append:
@@ -489,7 +510,8 @@ def render(context: RenderContext, params, content=None):
                 source += prepend+'\n'
             for page in pages:
                 page_index += 1
-                page_content = page_to_listpages_vars(page, content, page_index, total_pages)
+                page_content = page_to_listpages_vars(
+                    page, content, page_index, total_pages)
                 source += page_content+'\n'
             source += append
             output += renderer.single_pass_render(source, common_context)
@@ -501,12 +523,14 @@ def render(context: RenderContext, params, content=None):
                 base_path = '/%s' % context.article.full_name
                 for k, v in context.path_params.items():
                     if k != 'p':
-                        base_path += '/%s/%s' % (urllib.parse.quote_plus(str(k)), urllib.parse.quote_plus(str(v)))
+                        base_path += '/%s/%s' % (urllib.parse.quote_plus(
+                            str(k)), urllib.parse.quote_plus(str(v)))
             else:
                 base_path = '#'
 
             # add pagination if any
-            pagination = render_pagination(base_path, pagination_page, pagination_total_pages)
+            pagination = render_pagination(
+                base_path, pagination_page, pagination_total_pages)
 
             output = render_template_from_string(
                 """

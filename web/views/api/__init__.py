@@ -25,7 +25,8 @@ class APIView(View):
         except APIError as e:
             return self.render_error(e.code, e.message)
         except:
-            logging.error('Internal error while processing API handler:', exc_info=True)
+            logging.error(
+                'Internal error while processing API handler:', exc_info=True)
             return self.render_error(500, 'Внутренняя ошибка сервера')
 
     def http_method_not_allowed(self, request, *args, **kwargs):

@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='settings',
             name='rating_mode',
-            field=models.TextField(choices=[('default', 'Default'), ('disabled', 'Disabled'), ('updown', 'Updown'), ('stars', 'Stars')], default='default', verbose_name='Система рейтинга'),
+            field=models.TextField(choices=[('default', 'Default'), ('disabled', 'Disabled'), (
+                'updown', 'Updown'), ('stars', 'Stars')], default='default', verbose_name='Система рейтинга'),
         ),
     ]

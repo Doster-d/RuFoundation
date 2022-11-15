@@ -13,26 +13,31 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='category',
-            options={'verbose_name': 'Настройки категории', 'verbose_name_plural': 'Настройки категории'},
+            options={'verbose_name': 'Настройки категории',
+                     'verbose_name_plural': 'Настройки категории'},
         ),
         migrations.AddField(
             model_name='article',
             name='media_name',
-            field=models.TextField(null=True, verbose_name='Название папки с файлами в ФС-хранилище'),
+            field=models.TextField(
+                null=True, verbose_name='Название папки с файлами в ФС-хранилище'),
         ),
         migrations.AlterField(
             model_name='category',
             name='users_can_delete',
-            field=models.BooleanField(default=False, verbose_name='Пользователи могут удалять статьи'),
+            field=models.BooleanField(
+                default=False, verbose_name='Пользователи могут удалять статьи'),
         ),
         migrations.AlterField(
             model_name='settings',
             name='category',
-            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='_settings', to='web.category'),
+            field=models.OneToOneField(
+                null=True, on_delete=django.db.models.deletion.CASCADE, related_name='_settings', to='web.category'),
         ),
         migrations.AlterField(
             model_name='settings',
             name='site',
-            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='_settings', to='web.site'),
+            field=models.OneToOneField(
+                null=True, on_delete=django.db.models.deletion.CASCADE, related_name='_settings', to='web.site'),
         ),
     ]

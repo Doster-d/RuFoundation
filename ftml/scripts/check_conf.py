@@ -89,6 +89,7 @@ def format_check_value(value):
 def convert_block_name(value):
     return value.casefold()
 
+
 def convert_module_name(value):
     value = inflection.underscore(value)
     value = inflection.camelize(value)
@@ -115,7 +116,8 @@ def load_block_data(root_dir):
         blocks = toml.load(file)
 
         # Normalize module keys for case-insensitive access
-        blocks = {convert_block_name(name): value for name, value in blocks.items()}
+        blocks = {convert_block_name(
+            name): value for name, value in blocks.items()}
 
     # Adjust configuration
     # Make implicit fields explicit, etc.
@@ -170,7 +172,8 @@ def load_module_data(root_dir):
         modules = toml.load(file)
 
         # Normalize module keys for case-insensitive access
-        modules = {convert_module_name(name): value for name, value in modules.items()}
+        modules = {convert_module_name(
+            name): value for name, value in modules.items()}
 
     # Adjust configuration
     # Make implicit fields explicit, etc.
@@ -362,7 +365,8 @@ def check_module_docs(module_conf, module_docs):
 
     success = True
 
-    modules_found = case_insensitive_set(MODULE_EXAMPLE_REGEX.findall(module_docs))
+    modules_found = case_insensitive_set(
+        MODULE_EXAMPLE_REGEX.findall(module_docs))
     modules_expected = case_insensitive_set(module_conf.keys())
 
     added = modules_found - modules_expected

@@ -3,7 +3,8 @@
 
 import py7zr
 import shutil
-import os, os.path
+import os
+import os.path
 import sys
 import json
 import re
@@ -35,7 +36,8 @@ def maybe_load_pages_meta(base_path_or_list):
         for f in allfiles:
             with codecs.open('%s/meta/pages/%s' % (base_path_or_list, f), 'r', encoding='utf-8') as fp:
                 meta = json.load(fp)
-                meta['revisions'].sort(key=lambda x: x['revision'], reverse=True)
+                meta['revisions'].sort(
+                    key=lambda x: x['revision'], reverse=True)
                 meta['filename'] = f
                 pages.append(meta)
         return pages
@@ -47,7 +49,8 @@ def run_in_threads(fn, pages):
     per_thread_pages = []
     for i in range(thread_count):
         single_thread_cnt = int(math.ceil(len(pages) / thread_count))
-        per_thread_pages.append(pages[i*single_thread_cnt:(i+1)*single_thread_cnt])
+        per_thread_pages.append(
+            pages[i*single_thread_cnt:(i+1)*single_thread_cnt])
     threads = []
     site = get_current_site()
     for thread_work in per_thread_pages:
@@ -86,28 +89,34 @@ def get_or_create_user(user_name_or_id, user_data, user_data_by_un):
         if type(user_name_or_id) == str:
             user_attrs = user_data_by_un.get(user_name_or_id, None)
             if user_attrs:
-                user_name = normalize_username(user_attrs['full_name']) or user_name_or_id
+                user_name = normalize_username(
+                    user_attrs['full_name']) or user_name_or_id
             else:
                 user_name = user_name_or_id
         elif type(user_name_or_id) == int:
             user_attrs = user_data.get(str(user_name_or_id), None)
             if user_attrs:
-                user_name = normalize_username(user_attrs['full_name']) or user_attrs['username']
+                user_name = normalize_username(
+                    user_attrs['full_name']) or user_attrs['username']
             else:
                 user_name = 'deleted-%d' % user_name_or_id
         else:
-            raise TypeError('Invalid parameter for Wikidot user: %s' % repr(user_name_or_id))
+            raise TypeError('Invalid parameter for Wikidot user: %s' %
+                            repr(user_name_or_id))
         # for w/e reason this causes issues in threading.
-        existing = list(User.objects.filter(wikidot_username__iexact=user_name))
+        existing = list(User.objects.filter(
+            wikidot_username__iexact=user_name))
         try:
             if not existing:
                 with transaction.atomic():
-                    new_user = User(type=User.UserType.Wikidot, username=uuid4(), wikidot_username=user_name, is_active=False)
+                    new_user = User(type=User.UserType.Wikidot, username=uuid4(
+                    ), wikidot_username=user_name, is_active=False)
                     new_user.save()
                 return new_user
             return existing[0]
         except IntegrityError:
-            existing = list(User.objects.filter(wikidot_username__iexact=user_name))
+            existing = list(User.objects.filter(
+                wikidot_username__iexact=user_name))
             return existing[0]
 
 
@@ -122,7 +131,8 @@ def init_users(base_path):
             user_bucket = json.load(fp)
             for k in user_bucket:
                 g_users[k] = user_bucket[k]
-                g_users_by_username[user_bucket[k]['username']] = user_bucket[k]
+                g_users_by_username[user_bucket[k]
+                                    ['username']] = user_bucket[k]
 
     return g_users, g_users_by_username
 
@@ -163,7 +173,8 @@ def run(base_path):
         for meta in pages:
             article = articles.get_article(meta['name'])
             if article is None:
-                logging.warning('Missing article \'%s\' for file import', meta['name'])
+                logging.warning(
+                    'Missing article \'%s\' for file import', meta['name'])
                 continue
             files = meta.get('files', [])
             for file in files:
@@ -171,12 +182,15 @@ def run(base_path):
                 if file['author'] in users:
                     file_user = users[file['author']]
                 else:
-                    file_user = users[file['author']] = get_or_create_user(file['author'], g_users, g_users_by_username)
-                from_path = '%s/%s/%d' % (from_files, urls.partial_quote(meta['name']), file['file_id'])
+                    file_user = users[file['author']] = get_or_create_user(
+                        file['author'], g_users, g_users_by_username)
+                from_path = '%s/%s/%d' % (from_files,
+                                          urls.partial_quote(meta['name']), file['file_id'])
                 _, ext = os.path.splitext(file['name'])
                 media_name = str(uuid4()) + ext
                 if File.objects.filter(name=file['name'], article=article):
-                    logging.warning('Warn: file exists: %s/%s', meta['name'], file['name'])
+                    logging.warning('Warn: file exists: %s/%s',
+                                    meta['name'], file['name'])
                     continue
                 new_file = File(
                     name=file['name'],
@@ -191,11 +205,13 @@ def run(base_path):
                     os.makedirs(local_media_dir, exist_ok=True)
                 to_path = new_file.local_media_path
                 if not os.path.exists(from_path):
-                    logging.warning('Warn: file not found: %s/%s', meta['name'], file['name'])
+                    logging.warning('Warn: file not found: %s/%s',
+                                    meta['name'], file['name'])
                     continue
                 shutil.copyfile(from_path, to_path)
                 new_file.save()
-                new_file.created_at = datetime.datetime.fromtimestamp(file['stamp'], tz=datetime.timezone.utc)
+                new_file.created_at = datetime.datetime.fromtimestamp(
+                    file['stamp'], tz=datetime.timezone.utc)
                 new_file.save()
                 with t_lock:
                     if time.time() - t > 1:
@@ -214,8 +230,10 @@ def run(base_path):
             pagename = meta['name']
             title = meta['title'] if 'title' in meta else None
             tags = meta['tags'] if 'tags' in meta else []
-            updated_at = datetime.datetime.fromtimestamp(meta['revisions'][0]['stamp'], tz=datetime.timezone.utc)
-            created_at = datetime.datetime.fromtimestamp(meta['revisions'][-1]['stamp'], tz=datetime.timezone.utc)
+            updated_at = datetime.datetime.fromtimestamp(
+                meta['revisions'][0]['stamp'], tz=datetime.timezone.utc)
+            created_at = datetime.datetime.fromtimestamp(
+                meta['revisions'][-1]['stamp'], tz=datetime.timezone.utc)
             fn_7z = '.'.join(f.split('.')[:-1]) + '.7z'
             fn_7z = '%s/pages/%s' % (base_path, fn_7z)
             if not os.path.exists(fn_7z):
@@ -226,7 +244,8 @@ def run(base_path):
             if article_author in users:
                 user = users[article_author]
             else:
-                user = users[article_author] = get_or_create_user(article_author, g_users, g_users_by_username)
+                user = users[article_author] = get_or_create_user(
+                    article_author, g_users, g_users_by_username)
 
             # create article and set tags
             article = articles.get_article(pagename)
@@ -252,7 +271,8 @@ def run(base_path):
             last_source_version = None
 
             with py7zr.SevenZipFile(fn_7z) as z:
-                all_file_names = ['%d.txt' % x['revision'] for x in revisions if 'S' in x['flags'] or 'N' in x['flags']]
+                all_file_names = ['%d.txt' % x['revision']
+                                  for x in revisions if 'S' in x['flags'] or 'N' in x['flags']]
                 text_revisions = z.read(all_file_names)
                 for revision in revisions:
                     total_cnt_rev += 1
@@ -260,7 +280,8 @@ def run(base_path):
                     if revision['author'] in users:
                         user = users[revision['author']]
                     else:
-                        user = users[revision['author']] = get_or_create_user(revision['author'], g_users, g_users_by_username)
+                        user = users[revision['author']] = get_or_create_user(
+                            revision['author'], g_users, g_users_by_username)
                     log = ArticleLogEntry(
                         rev_number=revision['revision'],
                         article=article,
@@ -269,7 +290,8 @@ def run(base_path):
                         comment=revision['commentary']
                     )
                     if 'S' in revision['flags'] or 'N' in revision['flags']:
-                        content = text_revisions['%d.txt' % revision['revision']].read().decode('utf-8')
+                        content = text_revisions['%d.txt' % revision['revision']].read().decode(
+                            'utf-8')
 
                         for k, v in settings.ARTICLE_IMPORT_REPLACE_CONFIG.items():
                             content = content.replace(k, v)
@@ -288,11 +310,13 @@ def run(base_path):
                         else:
                             log.type = ArticleLogEntry.LogEntryType.Source
                     log.save()
-                    log.created_at = datetime.datetime.fromtimestamp(revision['stamp'], tz=datetime.timezone.utc)
+                    log.created_at = datetime.datetime.fromtimestamp(
+                        revision['stamp'], tz=datetime.timezone.utc)
                     log.save()
                     with t_lock:
                         if time.time() - t > 1:
-                            logging.info('Added: %d/%d (revisions: %d/%d)' % (total_cnt, total_pages, total_cnt_rev, total_revisions))
+                            logging.info('Added: %d/%d (revisions: %d/%d)' %
+                                         (total_cnt, total_pages, total_cnt_rev, total_revisions))
                             t = time.time()
 
             if last_source_version:
@@ -301,7 +325,8 @@ def run(base_path):
 
             with t_lock:
                 if time.time() - t > 1:
-                    logging.info('Added: %d/%d (revisions: %d/%d)' % (total_cnt, total_pages, total_cnt_rev, total_revisions))
+                    logging.info('Added: %d/%d (revisions: %d/%d)' %
+                                 (total_cnt, total_pages, total_cnt_rev, total_revisions))
                     t = time.time()
 
     total_cnt = 0
@@ -339,7 +364,8 @@ def set_parents(base_path_or_list):
                 # try to find if it was renamed
                 for rename in page_renames:
                     if rename[0] >= rev['stamp'] and rename[1] == parent:
-                        logging.info('Parent was renamed: %s -> %s' % (rename[1], parent))
+                        logging.info('Parent was renamed: %s -> %s' %
+                                     (rename[1], parent))
                         parent = rename[2]
                 break
 

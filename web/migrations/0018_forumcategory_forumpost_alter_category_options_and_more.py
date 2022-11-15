@@ -18,11 +18,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ForumCategory',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(verbose_name='Название')),
                 ('description', models.TextField(verbose_name='Описание')),
-                ('order', models.IntegerField(default=0, verbose_name='Порядок сортировки')),
-                ('is_for_comments', models.BooleanField(default=False, verbose_name='Отображать комментарии к статьям в этом разделе')),
+                ('order', models.IntegerField(
+                    default=0, verbose_name='Порядок сортировки')),
+                ('is_for_comments', models.BooleanField(default=False,
+                 verbose_name='Отображать комментарии к статьям в этом разделе')),
             ],
             options={
                 'verbose_name': 'Раздел форума',
@@ -32,14 +35,21 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ForumPost',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(verbose_name='Название')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Время создания')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Время изменения')),
-                ('deleted_at', models.DateTimeField(verbose_name='Время удаления')),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Автор')),
-                ('reply_to', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.forumpost', verbose_name='Ответ на комментарий')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
+                ('created_at', models.DateTimeField(
+                    auto_now_add=True, verbose_name='Время создания')),
+                ('updated_at', models.DateTimeField(
+                    auto_now=True, verbose_name='Время изменения')),
+                ('deleted_at', models.DateTimeField(
+                    verbose_name='Время удаления')),
+                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL,
+                 to=settings.AUTH_USER_MODEL, verbose_name='Автор')),
+                ('reply_to', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL,
+                 to='web.forumpost', verbose_name='Ответ на комментарий')),
+                ('site', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
             ],
             options={
                 'verbose_name': 'Сообщение форума',
@@ -48,23 +58,30 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name='category',
-            options={'verbose_name': 'Настройки категории', 'verbose_name_plural': 'Настройки категорий'},
+            options={'verbose_name': 'Настройки категории',
+                     'verbose_name_plural': 'Настройки категорий'},
         ),
         migrations.AlterField(
             model_name='articleversion',
             name='article',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='versions', to='web.article', verbose_name='Статья'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='versions', to='web.article', verbose_name='Статья'),
         ),
         migrations.CreateModel(
             name='ForumThread',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(verbose_name='Название')),
                 ('description', models.TextField(verbose_name='Описание')),
-                ('article', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='web.article', verbose_name='Статья (если это комментарии)')),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Автор')),
-                ('category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='web.forumcategory', verbose_name='Раздел (если это тема)')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
+                ('article', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                 to='web.article', verbose_name='Статья (если это комментарии)')),
+                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL,
+                 to=settings.AUTH_USER_MODEL, verbose_name='Автор')),
+                ('category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING,
+                 to='web.forumcategory', verbose_name='Раздел (если это тема)')),
+                ('site', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
             ],
             options={
                 'verbose_name': 'Тема форума',
@@ -74,13 +91,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ForumSection',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(verbose_name='Название')),
                 ('description', models.TextField(verbose_name='Описание')),
-                ('order', models.IntegerField(default=0, verbose_name='Порядок сортировки')),
-                ('is_hidden', models.BooleanField(default=False, verbose_name='Скрытая категория')),
-                ('is_hidden_for_users', models.BooleanField(default=False, verbose_name='Видима только модераторам')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
+                ('order', models.IntegerField(
+                    default=0, verbose_name='Порядок сортировки')),
+                ('is_hidden', models.BooleanField(
+                    default=False, verbose_name='Скрытая категория')),
+                ('is_hidden_for_users', models.BooleanField(
+                    default=False, verbose_name='Видима только модераторам')),
+                ('site', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
             ],
             options={
                 'verbose_name': 'Категория форума',
@@ -90,10 +112,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ForumPostVersion',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('source', models.TextField(verbose_name='Текст сообщения')),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.forumpost', verbose_name='Сообщение')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
+                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 to='web.forumpost', verbose_name='Сообщение')),
+                ('site', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт')),
             ],
             options={
                 'verbose_name': 'Версия сообщения форума',
@@ -103,15 +128,18 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='forumcategory',
             name='section',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='web.forumsection', verbose_name='Категория'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING,
+                                    to='web.forumsection', verbose_name='Категория'),
         ),
         migrations.AddField(
             model_name='forumcategory',
             name='site',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='web.site', verbose_name='Сайт'),
         ),
         migrations.AddConstraint(
             model_name='forumthread',
-            constraint=models.CheckConstraint(check=django.db.models.lookups.Exact(lhs=django.db.models.expressions.Func('article_id', 'category_id', function='num_nonnulls', output_field=models.IntegerField()), rhs=django.db.models.expressions.Value(1)), name='web_forumthread_category_or_article'),
+            constraint=models.CheckConstraint(check=django.db.models.lookups.Exact(lhs=django.db.models.expressions.Func(
+                'article_id', 'category_id', function='num_nonnulls', output_field=models.IntegerField()), rhs=django.db.models.expressions.Value(1)), name='web_forumthread_category_or_article'),
         ),
     ]
